@@ -3,9 +3,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020,
   },
-  plugins: [
-    'react',
-  ],
+  plugins: ['react'],
   ignorePatterns: ['serviceWorker.js', 'switcher.js'],
   rules: {
     'max-len': [0],
@@ -17,9 +15,18 @@ module.exports = {
     'operator-linebreak': [0],
     'import/no-unresolved': [0],
     'react/jsx-filename-extension': [1, { extensions: ['.js'] }],
-    'react/function-component-definition': [1, { namedComponents: 'arrow-function', unnamedComponents: 'arrow-function' }],
+    'react/function-component-definition': [
+      1,
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
+    ],
     'react/prop-types': [0],
     'react/jsx-props-no-spreading': [0],
     'jsx-a11y/anchor-is-valid': [0],
+    'linebreak-style': 0,
+    semi: 0,
+    'import/no-relative-packages': 0,
   },
-};
+}
