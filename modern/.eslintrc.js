@@ -28,5 +28,15 @@ module.exports = {
     'linebreak-style': 0,
     semi: 0,
     'import/no-relative-packages': 0,
+    'import-order': [
+      'error',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: false,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: false,
+      },
+    ],
   },
 }

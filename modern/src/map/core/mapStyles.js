@@ -1,4 +1,4 @@
-export const styleCustom = (url, attribution) => ({
+export const styleCustom = (url, attribution, layerInfo = {}) => ({
   version: 8,
   sources: {
     osm: {
@@ -9,17 +9,21 @@ export const styleCustom = (url, attribution) => ({
     },
   },
   glyphs: 'https://cdn.traccar.com/map/fonts/{fontstack}/{range}.pbf',
-  layers: [{
-    id: 'osm',
-    type: 'raster',
-    source: 'osm',
-  }],
-});
+  layers: [
+    {
+      id: 'osm',
+      type: 'raster',
+      source: 'osm',
+      ...layerInfo,
+    },
+  ],
+})
 
-export const styleOsm = () => styleCustom(
-  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  '© <a target="_top" rel="noopener" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-);
+export const styleOsm = () =>
+  styleCustom(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    '© <a target="_top" rel="noopener" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  )
 
 export const styleCarto = () => ({
   version: 8,
@@ -33,7 +37,8 @@ export const styleCarto = () => ({
         'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
       ],
       tileSize: 256,
-      attribution: '© <a target="_top" rel="noopener" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a target="_top" rel="noopener" href="https://carto.com/attribution">CARTO</a>',
+      attribution:
+        '© <a target="_top" rel="noopener" href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a target="_top" rel="noopener" href="https://carto.com/attribution">CARTO</a>',
     },
   },
   glyphs: 'https://cdn.traccar.com/map/fonts/{fontstack}/{range}.pbf',
@@ -46,10 +51,25 @@ export const styleCarto = () => ({
       maxzoom: 22,
     },
   ],
-});
+})
 
-export const styleMapbox = (style) => `mapbox://styles/mapbox/${style}`;
+export const styleMapbox = (style) => `mapbox://styles/mapbox/${style}`
 
-export const styleMapTiler = (style, key) => `https://api.maptiler.com/maps/${style}/style.json?key=${key}`;
+export const styleMapTiler = (style, key) =>
+  `https://api.maptiler.com/maps/${style}/style.json?key=${key}`
 
-export const styleLocationIq = (style, key) => `https://tiles.locationiq.com/v3/${style}/vector.json?key=${key}`;
+export const styleLocationIq = (style, key) =>
+  `https://tiles.locationiq.com/v3/${style}/vector.json?key=${key}`
+
+const BING_KEY = process.env.REACT_APP_BING_KEY
+
+export const bingOs = styleCustom(
+  `https://ecn.t0.tiles.virtualearth.net/tiles/r{quadkey}?g=12276&lbl=l1&productSet=mmOS&key=${BING_KEY}`,
+  '<img class="bingLogo" src="./img/bingLogo/bing_maps_logo_gray.png">',
+  {
+    id: 'bingOS',
+    maxzoom: 19,
+    minzoom: 10,
+    useCache: true,
+  }
+)
