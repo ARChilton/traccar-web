@@ -70,6 +70,5 @@ export const bingOs = styleCustom(
     id: 'bingOS',
     maxzoom: 19,
     minzoom: 10,
-    useCache: true,
   }
 )
