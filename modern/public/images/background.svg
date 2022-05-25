@@ -5,6 +5,6 @@
     </filter>
   </defs>
 
-  <circle cx="5" cy="50%" r="4"
+  <circle cx="5" cy="50%" r="4" stroke="orange" 
       style="fill:white; filter:url(#shadow);"/>
 </svg>
