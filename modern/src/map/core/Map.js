@@ -111,7 +111,7 @@ const Map = ({ children }) => {
 
   const [mapReady, setMapReady] = useState(false)
 
-  const [defaultMapLayer] = usePersistedState('mapLayer', 'locationIqStreets')
+  const [defaultMapLayer] = usePersistedState('mapLayer', 'bingOS')
   const mapboxAccessToken = useAttributePreference('mapboxAccessToken')
   const mapTilerKey = useAttributePreference('mapTilerKey')
   const locationIqKey = useAttributePreference(
@@ -170,7 +170,7 @@ const Map = ({ children }) => {
           uri: styleMapTiler('hybrid', mapTilerKey),
         },
         { id: 'custom', title: t('mapCustom'), uri: styleCustom(customMapUrl) },
-        { id: 'bingOS', title: 'Bing Ordnance Survey', uri: bingOS },
+        { id: 'bingOS', title: 'Ordnance Survey', uri: bingOS },
       ],
       defaultMapLayer
     )
