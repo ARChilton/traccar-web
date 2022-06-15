@@ -1,8 +1,8 @@
-import { useTheme } from '@mui/styles';
+import { map } from './core/MapView';
 import maplibregl from 'maplibre-gl';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { map } from './core/MapView';
+import { useTheme } from '@mui/styles';
 
 const MapRoutePath = ({ positions }) => {
   const id = 'replay';
@@ -33,7 +33,7 @@ const MapRoutePath = ({ positions }) => {
           coordinates: [],
         },
       },
-    });
+    })
     map.addLayer({
       source: id,
       id,
@@ -44,22 +44,23 @@ const MapRoutePath = ({ positions }) => {
       },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 2,
+        'line-width': 8,
+        'line-opacity': 0.6,
       },
-    });
+    })
 
     return () => {
       if (map.getLayer(id)) {
-        map.removeLayer(id);
+        map.removeLayer(id)
       }
       if (map.getSource(id)) {
-        map.removeSource(id);
+        map.removeSource(id)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   useEffect(() => {
-    const coordinates = positions.map((item) => [item.longitude, item.latitude]);
+    const coordinates = positions.map((item) => [item.longitude, item.latitude])
     map.getSource(id).setData({
       type: 'Feature',
       geometry: {
@@ -80,7 +81,7 @@ const MapRoutePath = ({ positions }) => {
     }
   }, [positions, reportColor]);
 
-  return null;
-};
+  return null
+}
 
 export default MapRoutePath;

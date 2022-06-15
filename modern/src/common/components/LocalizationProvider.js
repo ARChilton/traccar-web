@@ -1,9 +1,13 @@
 /* eslint-disable import/no-relative-packages */
-import React, {
-  createContext, useContext, useEffect, useMemo,
-} from 'react';
-import moment from 'moment';
+
 import 'moment/min/locales.min';
+
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 
 import af from '../../resources/l10n/af.json';
 import ar from '../../resources/l10n/ar.json';
@@ -35,6 +39,7 @@ import lt from '../../resources/l10n/lt.json';
 import lv from '../../resources/l10n/lv.json';
 import ml from '../../resources/l10n/ml.json';
 import mn from '../../resources/l10n/mn.json';
+import moment from 'moment';
 import ms from '../../resources/l10n/ms.json';
 import nb from '../../resources/l10n/nb.json';
 import ne from '../../resources/l10n/ne.json';
@@ -55,11 +60,11 @@ import ta from '../../resources/l10n/ta.json';
 import th from '../../resources/l10n/th.json';
 import tr from '../../resources/l10n/tr.json';
 import uk from '../../resources/l10n/uk.json';
+import usePersistedState from '../util/usePersistedState';
 import uz from '../../resources/l10n/uz.json';
 import vi from '../../resources/l10n/vi.json';
 import zh from '../../resources/l10n/zh.json';
 import zhTW from '../../resources/l10n/zh_TW.json';
-import usePersistedState from '../util/usePersistedState';
 
 const languages = {
   af: { data: af, name: 'Afrikaans' },
@@ -116,39 +121,48 @@ const languages = {
   vi: { data: vi, name: 'Tiếng Việt' },
   zh: { data: zh, name: '中文' },
   zhTW: { data: zhTW, name: '中文 (Taiwan)' },
-};
+}
 
 const getDefaultLanguage = () => {
-  const browserLanguages = window.navigator.languages ? window.navigator.languages.slice() : [];
-  const browserLanguage = window.navigator.userLanguage || window.navigator.language;
-  browserLanguages.push(browserLanguage);
-  browserLanguages.push(browserLanguage.substring(0, 2));
+  const browserLanguages = window.navigator.languages
+    ? window.navigator.languages.slice()
+    : []
+  const browserLanguage =
+    window.navigator.userLanguage || window.navigator.language
+  browserLanguages.push(browserLanguage)
+  browserLanguages.push(browserLanguage.substring(0, 2))
 
   for (let i = 0; i < browserLanguages.length; i += 1) {
-    let language = browserLanguages[i].replace('-', '');
+    let language = browserLanguages[i].replace('-', '')
     if (language in languages) {
-      return language;
+      return language
     }
     if (language.length > 2) {
-      language = language.substring(0, 2);
+      language = language.substring(0, 2)
       if (language in languages) {
-        return language;
+        return language
       }
     }
   }
-  return 'en';
-};
+  return 'en'
+}
 
 const LocalizationContext = createContext({
   languages,
   language: 'en',
   setLanguage: () => {},
-});
+})
 
 export const LocalizationProvider = ({ children }) => {
-  const [language, setLanguage] = usePersistedState('language', getDefaultLanguage());
+  const [language, setLanguage] = usePersistedState(
+    'language',
+    getDefaultLanguage()
+  )
 
-  const value = useMemo(() => ({ languages, language, setLanguage }), [languages, language, setLanguage]);
+  const value = useMemo(
+    () => ({ languages, language, setLanguage }),
+    [languages, language, setLanguage]
+  )
 
   useEffect(() => {
     let selected;
@@ -164,19 +178,19 @@ export const LocalizationProvider = ({ children }) => {
     <LocalizationContext.Provider value={value}>
       {children}
     </LocalizationContext.Provider>
-  );
-};
+  )
+}
 
-export const useLocalization = () => useContext(LocalizationContext);
+export const useLocalization = () => useContext(LocalizationContext)
 
 export const useTranslation = () => {
-  const context = useContext(LocalizationContext);
-  const { data } = context.languages[context.language];
-  return useMemo(() => (key) => data[key], [data]);
-};
+  const context = useContext(LocalizationContext)
+  const { data } = context.languages[context.language]
+  return useMemo(() => (key) => data[key], [data])
+}
 
 export const useTranslationKeys = (predicate) => {
-  const context = useContext(LocalizationContext);
-  const { data } = context.languages[context.language];
-  return Object.keys(data).filter(predicate);
-};
+  const context = useContext(LocalizationContext)
+  const { data } = context.languages[context.language]
+  return Object.keys(data).filter(predicate)
+}

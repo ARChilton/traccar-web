@@ -1,39 +1,57 @@
-import React, {
-  useState, useEffect, useCallback, useRef,
-} from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  Paper, Toolbar, IconButton, Button, OutlinedInput, InputAdornment, Popover, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Badge,
+  Badge,
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Popover,
+  Select,
+  Toolbar,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ListIcon from '@mui/icons-material/ViewList';
-import TuneIcon from '@mui/icons-material/Tune';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
-import DevicesList from './DevicesList';
-import MapView from '../map/core/MapView';
-import MapSelectedDevice from '../map/main/MapSelectedDevice';
-import MapAccuracy from '../map/main/MapAccuracy';
-import MapGeofence from '../map/main/MapGeofence';
-import MapCurrentLocation from '../map/MapCurrentLocation';
+
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BottomMenu from '../common/components/BottomMenu';
-import { useTranslation } from '../common/components/LocalizationProvider';
-import PoiMap from '../map/main/PoiMap';
-import MapPadding from '../map/MapPadding';
-import StatusCard from './StatusCard';
-import { devicesActions } from '../store';
+import CloseIcon from '@mui/icons-material/Close';
+import DevicesList from './DevicesList';
+import ListIcon from '@mui/icons-material/ViewList';
+import MapAccuracy from '../map/main/MapAccuracy';
+import MapCurrentLocation from '../map/MapCurrentLocation';
 import MapDefaultCamera from '../map/main/MapDefaultCamera';
-import usePersistedState from '../common/util/usePersistedState';
-import MapLiveRoutes from '../map/main/MapLiveRoutes';
-import { useDeviceReadonly } from '../common/util/permissions';
-import MapPositions from '../map/MapPositions';
 import MapDirection from '../map/MapDirection';
+import MapGeofence from '../map/main/MapGeofence';
+import MapLiveRoutes from '../map/main/MapLiveRoutes';
 import MapOverlay from '../map/overlay/MapOverlay';
+import MapPadding from '../map/MapPadding';
+import MapPositions from '../map/MapPositions';
+import MapSelectedDevice from '../map/main/MapSelectedDevice';
+import MapView from '../map/core/MapView';
+import PoiMap from '../map/main/PoiMap';
+import StatusCard from './StatusCard';
+import TuneIcon from '@mui/icons-material/Tune';
+import { devicesActions } from '../store';
+import { makeStyles } from '@mui/styles';
+import moment from 'moment';
+import { useDeviceReadonly } from '../common/util/permissions';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
+import usePersistedState from '../common/util/usePersistedState';
+import { useTheme } from '@mui/material/styles';
+import { useTranslation } from '../common/components/LocalizationProvider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
