@@ -24,7 +24,7 @@ const BING_KEY = process.env.REACT_APP_BING_KEY
 export default () => {
   const t = useTranslation();
   const mapTilerKey = useAttributePreference('mapTilerKey');
-  const locationIqKey = useAttributePreference('locationIqKey') || 'pk.0f147952a41c555a5b70614039fd148b';
+  const locationIqKey = useAttributePreference('locationIqKey');
   const bingMapsKey = useAttributePreference('bingMapsKey') || BING_KEY;
   const tomTomKey = useAttributePreference('tomTomKey');
   const hereKey = useAttributePreference('hereKey');
@@ -34,7 +34,7 @@ export default () => {
     {
       id: 'locationIqStreets',
       title: t('mapLocationIqStreets'),
-      style: `https://tiles.locationiq.com/v3/streets/vector.json?key=${locationIqKey}`,
+      style: `https://tiles.locationiq.com/v3/streets/vector.json?key=${locationIqKey || 'pk.0f147952a41c555a5b70614039fd148b'}`,
       available: true,
     },
     {
