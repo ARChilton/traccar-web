@@ -26,8 +26,8 @@ const MapReplayPath = ({ positions }) => {
       },
       paint: {
         'line-color': 'orange',
-        'line-width': 4,
-        'line-opacity': 0.75,
+        'line-width': 8,
+        'line-opacity': 0.6,
       },
     })
 
