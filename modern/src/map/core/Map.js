@@ -60,19 +60,19 @@ const initMap = async () => {
     await Promise.all(
       deviceCategories.map(async (category) => {
         const results = []
-        ;['positive', 'negative', 'neutral'].forEach((color) => {
-          results.push(
-            loadImage(`images/icon/${category}.svg`).then((icon) => {
-              map.addImage(
-                `${category}-${color}`,
-                prepareIcon(background, icon, palette.colors[color]),
-                {
-                  pixelRatio: window.devicePixelRatio,
-                }
-              )
-            })
-          )
-        })
+          ;['positive', 'negative', 'neutral'].forEach((color) => {
+            results.push(
+              loadImage(`images/icon/${category}.svg`).then((icon) => {
+                map.addImage(
+                  `${category}-${color}`,
+                  prepareIcon(background, icon, palette.colors[color]),
+                  {
+                    pixelRatio: window.devicePixelRatio,
+                  }
+                )
+              })
+            )
+          })
         await Promise.all(results)
       })
     )
@@ -170,7 +170,7 @@ const Map = ({ children }) => {
           uri: styleMapTiler('hybrid', mapTilerKey),
         },
         { id: 'custom', title: t('mapCustom'), uri: styleCustom(customMapUrl) },
-        { id: 'bingOS', title: 'Ordnance Survey', uri: bingOS },
+        { id: 'bingOS', title: 'Bing Ordnance Survey', uri: bingOS },
       ],
       defaultMapLayer
     )
