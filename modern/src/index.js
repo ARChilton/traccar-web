@@ -1,17 +1,22 @@
 import 'typeface-roboto';
-import React from 'react';
-import ReactDOM from 'react-dom';
+
+import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
+
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { CssBaseline, ThemeProvider, StyledEngineProvider } from '@mui/material';
-import store from './store';
-import { LocalizationProvider } from './common/components/LocalizationProvider';
-import ErrorHandler from './common/components/ErrorHandler';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import CachingController from './CachingController';
-import SocketController from './SocketController';
-import theme from './common/theme';
+import ErrorHandler from './common/components/ErrorHandler';
+import { LocalizationProvider } from './common/components/LocalizationProvider';
+import NativeInterface from './common/components/NativeInterface';
 import Navigation from './Navigation';
+import ServerProvider from './ServerProvider';
+import SocketController from './SocketController';
 import preloadImages from './map/core/preloadImages';
+import store from './store';
+import theme from './common/theme';
+
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 preloadImages();

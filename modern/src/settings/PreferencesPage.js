@@ -39,7 +39,7 @@ const PreferencesPage = () => {
   const languageList = Object.entries(languages).map((values) => ({ code: values[0], name: values[1].name }));
 
   const mapStyles = useMapStyles();
-  const [activeMapStyles, setActiveMapStyles] = usePersistedState('activeMapStyles', ['locationIqStreets', 'osm', 'carto']);
+  const [activeMapStyles, setActiveMapStyles] = usePersistedState('activeMapStyles', ['locationIqStreets', 'osm', 'carto', 'bingOS', 'bingRoad', 'bingAerial', 'googleTraffic']);
 
   const mapOverlays = useMapOverlays();
   const [selectedMapOverlay, setSelectedMapOverlay] = usePersistedState('selectedMapOverlay');

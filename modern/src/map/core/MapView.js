@@ -75,7 +75,7 @@ const MapView = ({ children }) => {
   const [mapReady, setMapReady] = useState(false);
 
   const mapStyles = useMapStyles();
-  const [activeMapStyles] = usePersistedState('activeMapStyles', ['locationIqStreets', 'osm', 'carto', 'bingOS', 'bingRoad', 'bingAerial']);
+  const [activeMapStyles] = usePersistedState('activeMapStyles', ['locationIqStreets', 'osm', 'carto', 'bingOS', 'bingRoad', 'bingAerial', 'googleTraffic']);
   const [defaultMapStyle] = usePersistedState('selectedMapStyle', 'locationIqStreets');
   const mapboxAccessToken = useAttributePreference('mapboxAccessToken');
 

@@ -122,8 +122,14 @@ export default () => {
         //   minzoom: 10,
         // },
       ),
-      available: true,
+      available: !!bingMapsKey,
       attribute: 'bingMapsKey',
+    },
+    {
+      id: 'googleTraffic',
+      title: 'Google Traffic',
+      style: styleCustom(['https://mt0.google.com/vt/lyrs=y,traffic&hl=sl&x={x}&y={y}&z={z}&s=Ga']),
+      available: true,
     },
     {
       id: 'tomTomBasic',
