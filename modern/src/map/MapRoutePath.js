@@ -43,7 +43,7 @@ const MapRoutePath = ({ positions }) => {
         'line-cap': 'round',
       },
       paint: {
-        'line-color': ['get', 'color'],
+        'line-color': 'orange',
         'line-width': 8,
         'line-opacity': 0.6,
       },
