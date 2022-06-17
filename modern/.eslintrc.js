@@ -37,7 +37,7 @@ module.exports = {
     semi: 0,
     'import/no-relative-packages': 0,
     'import-order': [
-      'error',
+      'warn',
       {
         ignoreCase: false,
         ignoreDeclarationSort: false,

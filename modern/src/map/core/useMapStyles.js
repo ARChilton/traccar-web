@@ -19,13 +19,12 @@ const styleCustom = (urls, attribution) => ({
     source: 'custom',
   }],
 });
-const BING_KEY = process.env.REACT_APP_BING_KEY
 
 export default () => {
   const t = useTranslation();
   const mapTilerKey = useAttributePreference('mapTilerKey');
   const locationIqKey = useAttributePreference('locationIqKey');
-  const bingMapsKey = useAttributePreference('bingMapsKey') || BING_KEY;
+  const bingMapsKey = useAttributePreference('bingMapsKey');
   const tomTomKey = useAttributePreference('tomTomKey');
   const hereKey = useAttributePreference('hereKey');
   const customMapUrl = useSelector((state) => state.session.server?.mapUrl);
@@ -114,13 +113,7 @@ export default () => {
       id: 'bingOS',
       title: 'Ordnance Survey',
       style: styleCustom(
-        [`https://ecn.t0.tiles.virtualearth.net/tiles/r{quadkey}?g=12276&lbl=l1&productSet=mmOS&key=${BING_KEY}`],
-
-        // {
-        //   id: 'bingOS',
-        //   maxzoom: 19,
-        //   minzoom: 10,
-        // },
+        [`https://ecn.t0.tiles.virtualearth.net/tiles/r{quadkey}?g=12276&lbl=l1&productSet=mmOS&key=${bingMapsKey}`],
       ),
       available: !!bingMapsKey,
       attribute: 'bingMapsKey',
