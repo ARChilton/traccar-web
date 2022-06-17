@@ -86,7 +86,7 @@ export default () => {
       id: 'bingRoad',
       title: t('mapBingRoad'),
       style: styleCustom(
-        [0, 1, 2, 3].map((i) => `http://ak.dynamic.t${i}.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-US&it=G,L&shading=hill&og=1885&n=z`),
+        [`https://ecn.t0.tiles.virtualearth.net/tiles/r{quadkey}.jpeg?g=12368&mkt=en-US&shading=hill&key=${bingMapsKey}`],
       ),
       available: !!bingMapsKey,
       attribute: 'bingMapsKey',
@@ -95,7 +95,7 @@ export default () => {
       id: 'bingAerial',
       title: t('mapBingAerial'),
       style: styleCustom(
-        [0, 1, 2, 3].map((i) => `http://ecn.t${i}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=12327`),
+        [`https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=12368&key=${bingMapsKey}`],
       ),
       available: !!bingMapsKey,
       attribute: 'bingMapsKey',
@@ -104,7 +104,7 @@ export default () => {
       id: 'bingHybrid',
       title: t('mapBingHybrid'),
       style: styleCustom(
-        [0, 1, 2, 3].map((i) => `http://ak.dynamic.t${i}.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=en-US&it=A,G,L&og=1885&n=z`),
+        [`https://ecn.t0.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=12368&mkt=en-US&key=${bingMapsKey}`],
       ),
       available: !!bingMapsKey,
       attribute: 'bingMapsKey',
