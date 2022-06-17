@@ -26,6 +26,7 @@ import {
 } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { mapIcons } from '../map/core/preloadImages';
+import { daysSinceLastTurnOn, needsToTurnOn } from './phoneCreditFunctions';
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -73,17 +74,20 @@ const DeviceRow = ({ data, index, style }) => {
   const { items } = data;
   const item = items[index];
   const position = useSelector((state) => state.positions.items[item.id]);
+  const needsUsing = needsToTurnOn(item)
+  const dayCountSinceLastTurnOn = daysSinceLastTurnOn(item)
 
   const secondaryText = () => {
     if (item.status === 'online' || !item.lastUpdate) {
       return formatStatus(item.status, t);
     }
-    return moment(item.lastUpdate).fromNow();
+    const timeSince = moment(item.lastUpdate).fromNow();
+    return needsUsing ? `${timeSince} - ${dayCountSinceLastTurnOn} days ago` : timeSince;
   };
 
   return (
     <div style={style}>
-      <ListItem button key={item.id} className={classes.listItem} onClick={() => dispatch(devicesActions.select(item.id))}>
+      <ListItem button key={item.id} className={classes.listItem} onClick={() => dispatch(devicesActions.select(item.id))} style={needsUsing ? { background: needsUsing } : {}}>
         <ListItemAvatar>
           <Avatar>
             <img className={classes.icon} src={mapIcons[item.category || 'default']} alt="" />
