@@ -11,11 +11,10 @@ import {
   Select,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import InputAdornment from '@mui/material/InputAdornment';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { prefixString } from '../common/util/stringUtils';
 import EditItemView from './components/EditItemView';
-import EditAttributesView from './components/EditAttributesView';
+import EditAttributesAccordion from './components/EditAttributesAccordion';
 import { useAttributePreference } from '../common/util/preferences';
 import {
   speedFromKnots, speedToKnots, distanceFromMeters, distanceToMeters,
@@ -42,8 +41,8 @@ const MaintenancePage = () => {
   const [item, setItem] = useState();
   const [labels, setLabels] = useState({ start: '', period: '' });
 
-  const speedUnit = useAttributePreference('speedUnit');
-  const distanceUnit = useAttributePreference('distanceUnit');
+  const speedUnit = useAttributePreference('speedUnit', 'kn');
+  const distanceUnit = useAttributePreference('distanceUnit', 'km');
 
   const convertToList = (attributes) => {
     const otherList = [];
@@ -72,8 +71,11 @@ const MaintenancePage = () => {
           setLabels({ ...labels, start: t(prefixString('shared', speedUnit)), period: t(prefixString('shared', speedUnit)) });
           break;
         default:
+          setLabels({ ...labels, start: null, period: null });
           break;
       }
+    } else {
+      setLabels({ ...labels, start: null, period: null });
     }
   };
 
@@ -148,36 +150,21 @@ const MaintenancePage = () => {
                 type="number"
                 value={rawToValue(item.start) || ''}
                 onChange={(event) => setItem({ ...item, start: valueToRaw(event.target.value) })}
-                label={t('maintenanceStart')}
-                InputProps={{
-                  endAdornment: <InputAdornment position="start">{labels.start}</InputAdornment>,
-                }}
+                label={labels.start ? `${t('maintenanceStart')} (${labels.start})` : t('maintenanceStart')}
               />
               <TextField
                 type="number"
                 value={rawToValue(item.period) || ''}
                 onChange={(event) => setItem({ ...item, period: valueToRaw(event.target.value) })}
-                label={t('maintenancePeriod')}
-                InputProps={{
-                  endAdornment: <InputAdornment position="start">{labels.period}</InputAdornment>,
-                }}
+                label={labels.period ? `${t('maintenancePeriod')} (${labels.period})` : t('maintenancePeriod')}
               />
             </AccordionDetails>
           </Accordion>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedAttributes')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-              <EditAttributesView
-                attributes={item.attributes}
-                setAttributes={(attributes) => setItem({ ...item, attributes })}
-                definitions={{}}
-              />
-            </AccordionDetails>
-          </Accordion>
+          <EditAttributesAccordion
+            attributes={item.attributes}
+            setAttributes={(attributes) => setItem({ ...item, attributes })}
+            definitions={{}}
+          />
         </>
       )}
     </EditItemView>

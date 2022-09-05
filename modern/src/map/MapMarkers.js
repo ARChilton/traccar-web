@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
-
+import { useId, useEffect } from 'react';
 import { map } from './core/MapView';
 
-const MapDirection = ({ position }) => {
-  const id = 'directions';
+const MapMarkers = ({ markers }) => {
+  const id = useId();
 
   useEffect(() => {
     map.addSource(id, {
@@ -18,8 +17,8 @@ const MapDirection = ({ position }) => {
       type: 'symbol',
       source: id,
       layout: {
-        'icon-image': 'direction',
-        'icon-rotate': ['get', 'rotation'],
+        'icon-image': '{category}-{color}',
+        'icon-allow-overlap': true,
       },
     });
 
@@ -36,22 +35,21 @@ const MapDirection = ({ position }) => {
   useEffect(() => {
     map.getSource(id).setData({
       type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [position.longitude, position.latitude],
-          },
-          properties: {
-            rotation: position.course,
-          },
+      features: markers.map(({ latitude, longitude, category, color }) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [longitude, latitude],
         },
-      ],
+        properties: {
+          category: category || 'default',
+          color,
+        },
+      })),
     });
-  }, [position]);
+  }, [markers]);
 
   return null;
 };
 
-export default MapDirection;
+export default MapMarkers;

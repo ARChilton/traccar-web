@@ -67,24 +67,43 @@ export const reverseCoordinates = (it) => {
   };
 };
 
-export const geofenceToFeature = (item) => {
+export const geofenceToFeature = (theme, item) => {
+  let geometry;
   if (item.area.indexOf('CIRCLE') > -1) {
     const coordinates = item.area.replace(/CIRCLE|\(|\)|,/g, ' ').trim().split(/ +/);
     const options = { steps: 32, units: 'meters' };
     const polygon = circle([Number(coordinates[1]), Number(coordinates[0])], Number(coordinates[2]), options);
-    return {
-      id: item.id,
-      type: 'Feature',
-      geometry: polygon.geometry,
-      properties: { name: item.name },
-    };
+    geometry = polygon.geometry;
+  } else {
+    geometry = reverseCoordinates(parse(item.area));
   }
   return {
     id: item.id,
     type: 'Feature',
-    geometry: reverseCoordinates(parse(item.area)),
-    properties: { name: item.name },
+    geometry,
+    properties: {
+      name: item.name,
+      color: item.attributes.color || theme.palette.colors.geometry,
+    },
   };
 };
 
 export const geometryToArea = (geometry) => stringify(reverseCoordinates(geometry));
+
+export const findFonts = (map) => {
+  const fontSet = new Set();
+  const { layers } = map.getStyle();
+  layers?.forEach?.((layer) => {
+    layer.layout?.['text-font']?.forEach?.(fontSet.add, fontSet);
+  });
+  const availableFonts = [...fontSet];
+  const regularFont = availableFonts.find((it) => it.includes('Regular'));
+  if (regularFont) {
+    return [regularFont];
+  }
+  const anyFont = availableFonts.find(Boolean);
+  if (anyFont) {
+    return [anyFont];
+  }
+  return ['Roboto Regular'];
+};

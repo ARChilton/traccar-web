@@ -10,7 +10,7 @@ const MapDefaultCamera = () => {
 
   const defaultLatitude = usePreference('latitude');
   const defaultLongitude = usePreference('longitude');
-  const defaultZoom = usePreference('zoom');
+  const defaultZoom = usePreference('zoom', 0);
 
   const [initialized, setInitialized] = useState(false);
 
@@ -27,7 +27,7 @@ const MapDefaultCamera = () => {
       } else {
         const coordinates = Object.values(positions).map((item) => [item.longitude, item.latitude]);
         if (coordinates.length > 1) {
-          const bounds = coordinates.reduce((bounds, item) => bounds.extend(item), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+          const bounds = coordinates.reduce((bounds, item) => bounds.extend(item), new maplibregl.LngLatBounds(coordinates[0], coordinates[1]));
           const canvas = map.getCanvas();
           map.fitBounds(bounds, {
             duration: 0,

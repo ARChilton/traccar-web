@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import {
+  Route, Routes, useLocation, useNavigate,
+} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { LinearProgress } from '@mui/material';
 import MainPage from './main/MainPage';
@@ -44,6 +46,7 @@ import PreferencesPage from './settings/PreferencesPage';
 import AccumulatorsPage from './settings/AccumulatorsPage';
 import CommandSendPage from './settings/CommandSendPage';
 import App from './App';
+import ChangeServerPage from './other/ChangeServerPage';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -51,13 +54,14 @@ const Navigation = () => {
 
   const [redirectsHandled, setRedirectsHandled] = useState(false);
 
+  const { pathname } = useLocation();
   const query = useQuery();
 
   useEffectAsync(async () => {
     if (query.get('token')) {
       const token = query.get('token');
       await fetch(`/api/session?token=${encodeURIComponent(token)}`);
-      navigate('/');
+      navigate(pathname);
     } else if (query.get('deviceId')) {
       const deviceId = query.get('deviceId');
       const response = await fetch(`/api/devices?uniqueId=${deviceId}`);
@@ -86,6 +90,7 @@ const Navigation = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/change-server" element={<ChangeServerPage />} />
       <Route path="/" element={<App />}>
         <Route index element={<MainPage />} />
 

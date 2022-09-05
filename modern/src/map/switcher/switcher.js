@@ -1,3 +1,5 @@
+import './switcher.css';
+
 export class SwitcherControl {
 
   constructor(onBeforeSwitch, onSwitch, onAfterSwitch) {
@@ -61,9 +63,9 @@ export class SwitcherControl {
   onSelectStyle(target) {
     this.onBeforeSwitch();
 
-    this.map.setStyle(JSON.parse(target.dataset.style), {
-      diff: false,
-    });
+    const style = this.styles.find((it) => it.id === target.dataset.id);
+    this.map.setStyle(style.style, { diff: false });
+    this.map.setTransformRequest(style.transformRequest);
 
     this.onSwitch(target.dataset.id);
 

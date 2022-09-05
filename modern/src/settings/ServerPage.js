@@ -21,7 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { sessionActions } from '../store';
-import EditAttributesView from './components/EditAttributesView';
+import EditAttributesAccordion from './components/EditAttributesAccordion';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import SelectField from '../common/components/SelectField';
 import PageLayout from '../common/components/PageLayout';
@@ -29,6 +29,7 @@ import SettingsMenu from './components/SettingsMenu';
 import useCommonDeviceAttributes from '../common/attributes/useCommonDeviceAttributes';
 import useCommonUserAttributes from '../common/attributes/useCommonUserAttributes';
 import { useCatch } from '../reactHelper';
+import useServerAttributes from '../common/attributes/useServerAttributes';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -59,6 +60,7 @@ const ServerPage = () => {
 
   const commonUserAttributes = useCommonUserAttributes(t);
   const commonDeviceAttributes = useCommonDeviceAttributes(t);
+  const serverAttributes = useServerAttributes(t);
 
   const original = useSelector((state) => state.session.server);
   const [item, setItem] = useState({ ...original });
@@ -155,6 +157,17 @@ const ServerPage = () => {
                   </Select>
                 </FormControl>
                 <FormControl>
+                  <InputLabel>{t('settingsAltitudeUnit')}</InputLabel>
+                  <Select
+                    label={t('settingsAltitudeUnit')}
+                    value={item.attributes.altitudeUnit || 'm'}
+                    onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, altitudeUnit: e.target.value } })}
+                  >
+                    <MenuItem value="m">{t('sharedMeters')}</MenuItem>
+                    <MenuItem value="ft">{t('sharedFeet')}</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl>
                   <InputLabel>{t('settingsVolumeUnit')}</InputLabel>
                   <Select
                     label={t('settingsVolumeUnit')}
@@ -225,23 +238,18 @@ const ServerPage = () => {
                     control={<Checkbox checked={item.disableReports} onChange={(event) => setItem({ ...item, disableReports: event.target.checked })} />}
                     label={t('userDisableReports')}
                   />
+                  <FormControlLabel
+                    control={<Checkbox checked={item.fixedEmail} onChange={(e) => setItem({ ...item, fixedEmail: e.target.checked })} />}
+                    label={t('userFixedEmail')}
+                  />
                 </FormGroup>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="subtitle1">
-                  {t('sharedAttributes')}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails className={classes.details}>
-                <EditAttributesView
-                  attributes={item.attributes}
-                  setAttributes={(attributes) => setItem({ ...item, attributes })}
-                  definitions={{ ...commonUserAttributes, ...commonDeviceAttributes }}
-                />
-              </AccordionDetails>
-            </Accordion>
+            <EditAttributesAccordion
+              attributes={item.attributes}
+              setAttributes={(attributes) => setItem({ ...item, attributes })}
+              definitions={{ ...commonUserAttributes, ...commonDeviceAttributes, ...serverAttributes }}
+            />
           </>
         )}
         <div className={classes.buttons}>

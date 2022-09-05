@@ -13,7 +13,9 @@ import ReportsMenu from './components/ReportsMenu';
 import usePositionAttributes from '../common/attributes/usePositionAttributes';
 import { useCatch } from '../reactHelper';
 import { useAttributePreference } from '../common/util/preferences';
-import { distanceFromMeters, speedFromKnots, volumeFromLiters } from '../common/util/converter';
+import {
+  altitudeFromMeters, distanceFromMeters, speedFromKnots, volumeFromLiters,
+} from '../common/util/converter';
 import useReportStyles from './common/useReportStyles';
 
 const ChartReportPage = () => {
@@ -23,6 +25,7 @@ const ChartReportPage = () => {
   const positionAttributes = usePositionAttributes(t);
 
   const distanceUnit = useAttributePreference('distanceUnit');
+  const altitudeUnit = useAttributePreference('altitudeUnit');
   const speedUnit = useAttributePreference('speedUnit');
   const volumeUnit = useAttributePreference('volumeUnit');
 
@@ -34,9 +37,11 @@ const ChartReportPage = () => {
   const maxValue = Math.max(...values);
   const valueRange = maxValue - minValue;
 
-  const handleSubmit = useCatch(async ({ deviceId, from, to, mail, headers }) => {
-    const query = new URLSearchParams({ deviceId, from, to, mail });
-    const response = await fetch(`/api/reports/route?${query.toString()}`, { headers });
+  const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
+    const query = new URLSearchParams({ deviceId, from, to });
+    const response = await fetch(`/api/reports/route?${query.toString()}`, {
+      headers: { Accept: 'application/json' },
+    });
     if (response.ok) {
       const positions = await response.json();
       const formattedPositions = positions.map((position) => {
@@ -51,11 +56,17 @@ const ChartReportPage = () => {
               case 'speed':
                 formatted[key] = speedFromKnots(value, speedUnit).toFixed(2);
                 break;
+              case 'altitude':
+                formatted[key] = altitudeFromMeters(value, altitudeUnit).toFixed(2);
+                break;
               case 'distance':
                 formatted[key] = distanceFromMeters(value, distanceUnit).toFixed(2);
                 break;
               case 'volume':
                 formatted[key] = volumeFromLiters(value, volumeUnit).toFixed(2);
+                break;
+              case 'hours':
+                formatted[key] = (value / 1000).toFixed(2);
                 break;
               default:
                 formatted[key] = value;

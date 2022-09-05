@@ -1,12 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import makeStyles from '@mui/styles/makeStyles';
-import { IconButton, Tooltip } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
+import {
+  IconButton, Tooltip, Avatar, List, ListItemAvatar, ListItemText, ListItemButton,
+} from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import BatteryFullIcon from '@mui/icons-material/BatteryFull';
@@ -15,8 +12,6 @@ import Battery60Icon from '@mui/icons-material/Battery60';
 import BatteryCharging60Icon from '@mui/icons-material/BatteryCharging60';
 import Battery20Icon from '@mui/icons-material/Battery20';
 import BatteryCharging20Icon from '@mui/icons-material/BatteryCharging20';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
-import FlashOffIcon from '@mui/icons-material/FlashOff';
 import ErrorIcon from '@mui/icons-material/Error';
 import moment from 'moment';
 import { devicesActions } from '../store';
@@ -25,7 +20,10 @@ import {
   formatAlarm, formatBoolean, formatPercentage, formatStatus, getStatusColor,
 } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import { mapIcons } from '../map/core/preloadImages';
+import { mapIconKey, mapIcons } from '../map/core/preloadImages';
+import { useAdministrator } from '../common/util/permissions';
+import usePersistedState from '../common/util/usePersistedState';
+import { ReactComponent as EngineIcon } from '../resources/images/data/engine.svg';
 import { daysSinceLastTurnOn, needsToTurnOn } from './phoneCreditFunctions';
 
 const useStyles = makeStyles((theme) => ({
@@ -71,30 +69,66 @@ const DeviceRow = ({ data, index, style }) => {
   const dispatch = useDispatch();
   const t = useTranslation();
 
+  const admin = useAdministrator();
+
   const { items } = data;
   const item = items[index];
   const position = useSelector((state) => state.positions.items[item.id]);
   const needsUsing = needsToTurnOn(item)
   const dayCountSinceLastTurnOn = daysSinceLastTurnOn(item)
 
-  const secondaryText = () => {
+  const geofences = useSelector((state) => state.geofences.items);
+
+  const [devicePrimary] = usePersistedState('devicePrimary', 'name');
+  const [deviceSecondary] = usePersistedState('deviceSecondary', '');
+
+  const formatProperty = (key) => {
+    if (key === 'geofenceIds') {
+      const geofenceIds = item[key] || [];
+      return geofenceIds.map((id) => geofences[id].name).join(', ');
+    }
+    return item[key];
+  };
+
+  /*const secondaryText = () => {
     if (item.status === 'online' || !item.lastUpdate) {
       return formatStatus(item.status, t);
     }
     const timeSince = moment(item.lastUpdate).fromNow();
     return needsUsing ? `${timeSince} - ${dayCountSinceLastTurnOn} days ago` : timeSince;
   };
+   */
+
+  const secondaryText = () => {
+    let status;
+    if (item.status === 'online' || !item.lastUpdate) {
+      status = formatStatus(item.status, t);
+    } else {
+      status = moment(item.lastUpdate).fromNow();
+    }
+    return (
+      <>
+        {deviceSecondary && item[deviceSecondary] && `${formatProperty(deviceSecondary)} • `}
+        <span className={classes[getStatusColor(item.status)]}>{status}</span>
+      </>
+    );
+  };
 
   return (
     <div style={style}>
-      <ListItem button key={item.id} className={classes.listItem} onClick={() => dispatch(devicesActions.select(item.id))} style={needsUsing ? { background: needsUsing } : {}}>
+      <ListItemButton
+        key={item.id}
+        className={classes.listItem}
+        onClick={() => dispatch(devicesActions.select(item.id))}
+        disabled={!admin && item.disabled}
+        style={needsUsing ? { background: needsUsing } : {}}>
         <ListItemAvatar>
           <Avatar>
-            <img className={classes.icon} src={mapIcons[item.category || 'default']} alt="" />
+            <img className={classes.icon} src={mapIcons[mapIconKey(item.category)]} alt="" />
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          primary={item.name}
+          primary={formatProperty(devicePrimary)}
           primaryTypographyProps={{ noWrap: true }}
           secondary={secondaryText()}
           secondaryTypographyProps={{ noWrap: true }}
@@ -113,9 +147,9 @@ const DeviceRow = ({ data, index, style }) => {
               <Tooltip title={`${t('positionIgnition')}: ${formatBoolean(position.attributes.ignition, t)}`}>
                 <IconButton size="small">
                   {position.attributes.ignition ? (
-                    <FlashOnIcon fontSize="small" className={classes.positive} />
+                    <EngineIcon width={20} height={20} className={classes.positive} />
                   ) : (
-                    <FlashOffIcon fontSize="small" className={classes.neutral} />
+                    <EngineIcon width={20} height={20} className={classes.neutral} />
                   )}
                 </IconButton>
               </Tooltip>
@@ -141,7 +175,7 @@ const DeviceRow = ({ data, index, style }) => {
             )}
           </>
         )}
-      </ListItem>
+      </ListItemButton>
     </div>
   );
 };
@@ -154,6 +188,15 @@ const DevicesList = ({ devices }) => {
   if (listInnerEl.current) {
     listInnerEl.current.className = classes.listInner;
   }
+
+  const [, setTime] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(Date.now()), 60000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffectAsync(async () => {
     const response = await fetch('/api/devices');

@@ -13,7 +13,8 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import { sessionActions } from '../../store';
 import { useTranslation } from './LocalizationProvider';
-import { useReadonly } from '../util/permissions';
+import { useRestriction } from '../util/permissions';
+import { nativePostMessage } from './NativeInterface';
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -21,54 +22,76 @@ const BottomMenu = () => {
   const dispatch = useDispatch();
   const t = useTranslation();
 
-  const readonly = useReadonly();
-  const userId = useSelector((state) => state.session.user?.id);
+  const readonly = useRestriction('readonly');
+  const disableReports = useRestriction('disableReports');
+  const user = useSelector((state) => state.session.user);
   const socket = useSelector((state) => state.session.socket);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const currentSelection = () => {
-    if (location.pathname === `/settings/user/${userId}`) {
-      return 3;
+    if (location.pathname === `/settings/user/${user.id}`) {
+      return 'account';
     } if (location.pathname.startsWith('/settings')) {
-      return 2;
+      return 'settings';
     } if (location.pathname.startsWith('/reports')) {
-      return 1;
+      return 'reports';
     } if (location.pathname === '/') {
-      return 0;
+      return 'map';
     }
     return null;
   };
 
   const handleAccount = () => {
     setAnchorEl(null);
-    navigate(`/settings/user/${userId}`);
+    navigate(`/settings/user/${user.id}`);
   };
 
   const handleLogout = async () => {
     setAnchorEl(null);
+
+    const notificationToken = window.localStorage.getItem('notificationToken');
+    if (notificationToken) {
+      window.localStorage.removeItem('notificationToken');
+      const tokens = user.attributes.notificationTokens?.split(',') || [];
+      if (tokens.includes(notificationToken)) {
+        const updatedUser = {
+          ...user,
+          attributes: {
+            ...user.attributes,
+            notificationTokens: tokens.length > 1 ? tokens.filter((it) => it !== notificationToken).join(',') : undefined,
+          },
+        };
+        await fetch(`/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedUser),
+        });
+      }
+    }
+
     await fetch('/api/session', { method: 'DELETE' });
+    nativePostMessage('logout');
     navigate('/login');
     dispatch(sessionActions.updateUser(null));
   };
 
   const handleSelection = (event, value) => {
     switch (value) {
-      case 0:
+      case 'map':
         navigate('/');
         break;
-      case 1:
+      case 'reports':
         navigate('/reports/route');
         break;
-      case 2:
+      case 'settings':
         navigate('/settings/preferences');
         break;
-      case 3:
-        if (readonly) {
-          handleLogout();
-        } else {
-          setAnchorEl(event.currentTarget);
-        }
+      case 'account':
+        setAnchorEl(event.currentTarget);
+        break;
+      case 'logout':
+        handleLogout();
         break;
       default:
         break;
@@ -85,14 +108,19 @@ const BottomMenu = () => {
               <MapIcon />
             </Badge>
           )}
+          value="map"
         />
-        <BottomNavigationAction label={t('reportTitle')} icon={<DescriptionIcon />} />
-        <BottomNavigationAction label={t('settingsTitle')} icon={<SettingsIcon />} />
-        {readonly
-          ? (<BottomNavigationAction label={t('loginLogout')} icon={<ExitToAppIcon />} />)
-          : (<BottomNavigationAction label={t('settingsUser')} icon={<PersonIcon />} />)}
+        {!disableReports && (
+          <BottomNavigationAction label={t('reportTitle')} icon={<DescriptionIcon />} value="reports" />
+        )}
+        <BottomNavigationAction label={t('settingsTitle')} icon={<SettingsIcon />} value="settings" />
+        {readonly ? (
+          <BottomNavigationAction label={t('loginLogout')} icon={<ExitToAppIcon />} value="logout" />
+        ) : (
+          <BottomNavigationAction label={t('settingsUser')} icon={<PersonIcon />} value="account" />
+        )}
       </BottomNavigation>
-      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
         <MenuItem onClick={handleAccount}>
           <Typography color="textPrimary">{t('settingsUser')}</Typography>
         </MenuItem>

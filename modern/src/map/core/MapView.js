@@ -1,5 +1,4 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import '../switcher/switcher.css';
 import maplibregl from 'maplibre-gl';
 import React, {
   useRef, useLayoutEffect, useEffect, useState,
@@ -17,6 +16,7 @@ element.style.boxSizing = 'initial';
 
 export const map = new maplibregl.Map({
   container: element,
+  attributionControl: false,
 });
 
 let ready = false;
@@ -78,6 +78,13 @@ const MapView = ({ children }) => {
   const [activeMapStyles] = usePersistedState('activeMapStyles', ['locationIqStreets', 'osm', 'carto', 'bingOS', 'bingRoad', 'bingAerial', 'googleTraffic']);
   const [defaultMapStyle] = usePersistedState('selectedMapStyle', 'bingOS');
   const mapboxAccessToken = useAttributePreference('mapboxAccessToken');
+  const maxZoom = useAttributePreference('web.maxZoom');
+
+  useEffect(() => {
+    if (maxZoom) {
+      map.setMaxZoom(maxZoom);
+    }
+  }, [maxZoom]);
 
   useEffect(() => {
     maplibregl.accessToken = mapboxAccessToken;

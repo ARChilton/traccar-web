@@ -1,6 +1,13 @@
 import moment from 'moment';
 import {
-  distanceFromMeters, distanceUnitString, speedFromKnots, speedUnitString, volumeFromLiters, volumeUnitString,
+  altitudeFromMeters,
+  altitudeUnitString,
+  distanceFromMeters,
+  distanceUnitString,
+  speedFromKnots,
+  speedUnitString,
+  volumeFromLiters,
+  volumeUnitString,
 } from './converter';
 import { prefixString } from './stringUtils';
 
@@ -10,14 +17,14 @@ export const formatNumber = (value, precision = 1) => Number(value.toFixed(preci
 
 export const formatPercentage = (value) => `${value}%`;
 
-export const formatTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
+export const formatTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => (value ? moment(value).format(format) : '');
 
 export const formatStatus = (value, t) => t(prefixString('deviceStatus', value));
 export const formatAlarm = (value, t) => (value ? t(prefixString('alarm', value)) : '');
 
 export const formatCourse = (value) => {
-  const courseValues = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-  let normalizedValue = value % 360;
+  const courseValues = ['\u2191', '\u2197', '\u2192', '\u2198', '\u2193', '\u2199', '\u2190', '\u2196'];
+  let normalizedValue = (value + 45 / 2) % 360;
   if (normalizedValue < 0) {
     normalizedValue += 360;
   }
@@ -26,11 +33,19 @@ export const formatCourse = (value) => {
 
 export const formatDistance = (value, unit, t) => `${distanceFromMeters(value, unit).toFixed(2)} ${distanceUnitString(unit, t)}`;
 
+export const formatAltitude = (value, unit, t) => `${altitudeFromMeters(value, unit).toFixed(2)} ${altitudeUnitString(unit, t)}`;
+
 export const formatSpeed = (value, unit, t) => `${speedFromKnots(value, unit).toFixed(2)} ${speedUnitString(unit, t)}`;
 
 export const formatVolume = (value, unit, t) => `${volumeFromLiters(value, unit).toFixed(2)} ${volumeUnitString(unit, t)}`;
 
 export const formatHours = (value) => moment.duration(value).humanize();
+
+export const formatNumericHours = (value, t) => {
+  const hours = Math.floor(value / 3600000);
+  const minutes = Math.floor((value % 3600000) / 60000);
+  return `${hours} ${t('sharedHourAbbreviation')} ${minutes} ${t('sharedMinuteAbbreviation')}`;
+};
 
 export const formatCoordinate = (key, value, unit) => {
   let hemisphere;
@@ -81,4 +96,23 @@ export const getBatteryStatus = (batteryLevel) => {
     return 'medium';
   }
   return 'negative';
+};
+
+export const formatNotificationTitle = (t, notification, includeId) => {
+  let title = t(prefixString('event', notification.type));
+  if (notification.type === 'alarm') {
+    const alarmString = notification.attributes.alarms;
+    if (alarmString) {
+      const alarms = alarmString.split(',');
+      if (alarms.length > 1) {
+        title += ` (${alarms.length})`;
+      } else {
+        title += ` ${formatAlarm(alarms[0], t)}`;
+      }
+    }
+  }
+  if (includeId) {
+    title += ` [${notification.id}]`;
+  }
+  return title;
 };

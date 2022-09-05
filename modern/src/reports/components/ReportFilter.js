@@ -7,7 +7,7 @@ import moment from 'moment';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 import useReportStyles from '../common/useReportStyles';
 
-const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDevice }) => {
+const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDevice, includeGroups }) => {
   const classes = useReportStyles();
   const t = useTranslation();
 
@@ -24,7 +24,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
 
   const disabled = !ignoreDevice && !deviceId && !deviceIds.length && !groupIds.length;
 
-  const handleClick = (mail, json) => {
+  const handleClick = (type) => {
     let selectedFrom;
     let selectedTo;
     switch (period) {
@@ -58,15 +58,13 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
         break;
     }
 
-    const accept = json ? 'application/json' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     handleSubmit({
       deviceId,
       deviceIds,
       groupIds,
       from: selectedFrom.toISOString(),
       to: selectedTo.toISOString(),
-      mail,
-      headers: { Accept: accept },
+      type,
     });
   };
 
@@ -82,14 +80,14 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
               onChange={(e) => (multiDevice ? setDeviceIds(e.target.value) : setDeviceId(e.target.value))}
               multiple={multiDevice}
             >
-              {Object.values(devices).map((device) => (
+              {Object.values(devices).sort((a, b) => a.name.localeCompare(b.name)).map((device) => (
                 <MenuItem key={device.id} value={device.id}>{device.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
         </div>
       )}
-      {multiDevice && (
+      {includeGroups && (
         <div className={classes.filterItem}>
           <FormControl fullWidth>
             <InputLabel>{t('settingsGroups')}</InputLabel>
@@ -99,7 +97,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
               onChange={(e) => setGroupIds(e.target.value)}
               multiple
             >
-              {Object.values(groups).map((group) => (
+              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
                 <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
               ))}
             </Select>
@@ -125,7 +123,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
           <TextField
             label={t('reportFrom')}
             type="datetime-local"
-            value={from.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+            value={from.locale('en').format(moment.HTML5_FMT.DATETIME_LOCAL)}
             onChange={(e) => setFrom(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
             fullWidth
           />
@@ -136,7 +134,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
           <TextField
             label={t('reportTo')}
             type="datetime-local"
-            value={to.format(moment.HTML5_FMT.DATETIME_LOCAL)}
+            value={to.locale('en').format(moment.HTML5_FMT.DATETIME_LOCAL)}
             onChange={(e) => setTo(moment(e.target.value, moment.HTML5_FMT.DATETIME_LOCAL))}
             fullWidth
           />
@@ -145,7 +143,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
       {children}
       <div className={classes.filterButtons}>
         <Button
-          onClick={() => handleClick(false, true)}
+          onClick={() => handleClick('json')}
           variant="outlined"
           color="secondary"
           className={classes.filterButton}
@@ -155,7 +153,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
         </Button>
         {!showOnly && (
           <Button
-            onClick={() => handleClick(false, false)}
+            onClick={() => handleClick('export')}
             variant="outlined"
             color="secondary"
             className={classes.filterButton}
@@ -166,7 +164,7 @@ const ReportFilter = ({ children, handleSubmit, showOnly, ignoreDevice, multiDev
         )}
         {!showOnly && (
           <Button
-            onClick={() => handleClick(true, false)}
+            onClick={() => handleClick('mail')}
             variant="outlined"
             color="secondary"
             className={classes.filterButton}

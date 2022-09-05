@@ -10,6 +10,8 @@ import { snackBarDurationLongMs } from './common/util/duration';
 import usePersistedState from './common/util/usePersistedState';
 
 import alarm from './resources/alarm.mp3';
+import { eventsActions } from './store/events';
+import useFeatures from './common/util/useFeatures';
 
 const SocketController = () => {
   const dispatch = useDispatch();
@@ -27,6 +29,8 @@ const SocketController = () => {
   const [soundEvents] = usePersistedState('soundEvents', []);
   const [soundAlarms] = usePersistedState('soundAlarms', ['sos']);
 
+  const features = useFeatures();
+
   const connectSocket = () => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const socket = new WebSocket(`${protocol}//${window.location.host}/api/socket`);
@@ -36,7 +40,7 @@ const SocketController = () => {
       dispatch(sessionActions.updateSocket(true));
     };
 
-    socket.onerror = async () => {
+    socket.onclose = async () => {
       dispatch(sessionActions.updateSocket(false));
       const devicesResponse = await fetch('/api/devices');
       if (devicesResponse.ok) {
@@ -60,6 +64,9 @@ const SocketController = () => {
         dispatch(positionsActions.update(data.positions));
       }
       if (data.events) {
+        if (!features.disableEvents) {
+          dispatch(eventsActions.add(data.events));
+        }
         setEvents(data.events);
       }
     };

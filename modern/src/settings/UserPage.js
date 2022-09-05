@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Accordion,
   AccordionSummary,
@@ -10,19 +11,17 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
-  InputAdornment,
-  IconButton,
-  OutlinedInput,
   FormGroup,
   TextField,
+  Button,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CachedIcon from '@mui/icons-material/Cached';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import EditItemView from './components/EditItemView';
-import EditAttributesView from './components/EditAttributesView';
+import EditAttributesAccordion from './components/EditAttributesAccordion';
 import LinkField from '../common/components/LinkField';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import useUserAttributes from '../common/attributes/useUserAttributes';
@@ -30,9 +29,10 @@ import { sessionActions } from '../store';
 import SelectField from '../common/components/SelectField';
 import SettingsMenu from './components/SettingsMenu';
 import useCommonUserAttributes from '../common/attributes/useCommonUserAttributes';
-import { useAdministrator, useManager } from '../common/util/permissions';
-import { prefixString } from '../common/util/stringUtils';
+import { useAdministrator, useRestriction, useManager } from '../common/util/permissions';
 import useQuery from '../common/util/useQuery';
+import { useCatch } from '../reactHelper';
+import { formatNotificationTitle } from '../common/util/formatter';
 
 const useStyles = makeStyles((theme) => ({
   details: {
@@ -45,18 +45,40 @@ const useStyles = makeStyles((theme) => ({
 
 const UserPage = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
 
   const admin = useAdministrator();
   const manager = useManager();
+  const fixedEmail = useRestriction('fixedEmail');
 
-  const currentUserId = useSelector((state) => state.session.user.id);
+  const currentUser = useSelector((state) => state.session.user);
+  const registrationEnabled = useSelector((state) => state.session.server.registration);
 
   const commonUserAttributes = useCommonUserAttributes(t);
   const userAttributes = useUserAttributes(t);
 
-  const [item, setItem] = useState();
+  const { id } = useParams();
+  const [item, setItem] = useState(id === currentUser.id.toString() ? currentUser : null);
+
+  const [deleteEmail, setDeleteEmail] = useState();
+  const [deleteFailed, setDeleteFailed] = useState(false);
+
+  const handleDelete = useCatch(async () => {
+    if (deleteEmail === currentUser.email) {
+      setDeleteFailed(false);
+      const response = await fetch(`/api/users/${currentUser.id}`, { method: 'DELETE' });
+      if (response.ok) {
+        navigate('/login');
+        dispatch(sessionActions.updateUser(null));
+      } else {
+        throw Error(await response.text());
+      }
+    } else {
+      setDeleteFailed(true);
+    }
+  });
 
   const query = useQuery();
   const [queryHandled, setQueryHandled] = useState(false);
@@ -74,7 +96,7 @@ const UserPage = () => {
   }, [item, queryHandled, setQueryHandled, attribute]);
 
   const onItemSaved = (result) => {
-    if (result.id === currentUserId) {
+    if (result.id === currentUser.id) {
       dispatch(sessionActions.updateUser(result));
     }
   };
@@ -86,7 +108,7 @@ const UserPage = () => {
       endpoint="users"
       item={item}
       setItem={setItem}
-      defaultItem={{ deviceLimit: -1 }}
+      defaultItem={admin ? { deviceLimit: -1 } : {}}
       validate={validate}
       onItemSaved={onItemSaved}
       menu={<SettingsMenu />}
@@ -110,6 +132,7 @@ const UserPage = () => {
                 value={item.email || ''}
                 onChange={(event) => setItem({ ...item, email: event.target.value })}
                 label={t('userEmail')}
+                disabled={fixedEmail}
               />
               <TextField
                 type="password"
@@ -185,6 +208,17 @@ const UserPage = () => {
                 </Select>
               </FormControl>
               <FormControl>
+                <InputLabel>{t('settingsAltitudeUnit')}</InputLabel>
+                <Select
+                  label={t('settingsAltitudeUnit')}
+                  value={(item.attributes && item.attributes.altitudeUnit) || 'm'}
+                  onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, altitudeUnit: e.target.value } })}
+                >
+                  <MenuItem value="m">{t('sharedMeters')}</MenuItem>
+                  <MenuItem value="ft">{t('sharedFeet')}</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
                 <InputLabel>{t('settingsVolumeUnit')}</InputLabel>
                 <Select
                   label={t('settingsVolumeUnit')}
@@ -225,31 +259,11 @@ const UserPage = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              <FormControl>
-                <InputLabel>{t('userToken')}</InputLabel>
-                <OutlinedInput
-                  type="text"
-                  value={item.token || ''}
-                  onChange={(e) => setItem({ ...item, token: e.target.value })}
-                  endAdornment={(
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          const token = [...Array(30)].map(() => Math.random().toString(36)[2]).join('');
-                          setItem({ ...item, token });
-                        }}
-                      >
-                        <CachedIcon fontSize="small" />
-                      </IconButton>
-                    </InputAdornment>
-                  )}
-                />
-              </FormControl>
+              token
               <TextField
                 label={t('userExpirationTime')}
                 type="date"
-                value={(item.expirationTime && moment(item.expirationTime).format(moment.HTML5_FMT.DATE)) || '2999-01-01'}
+                value={(item.expirationTime && moment(item.expirationTime).locale('en').format(moment.HTML5_FMT.DATE)) || '2099-01-01'}
                 onChange={(e) => setItem({ ...item, expirationTime: moment(e.target.value, moment.HTML5_FMT.DATE).format() })}
                 disabled={!manager}
               />
@@ -298,24 +312,46 @@ const UserPage = () => {
                   label={t('userDisableReports')}
                   disabled={!manager}
                 />
+                <FormControlLabel
+                  control={<Checkbox checked={item.fixedEmail} onChange={(e) => setItem({ ...item, fixedEmail: e.target.checked })} />}
+                  label={t('userFixedEmail')}
+                  disabled={!manager}
+                />
               </FormGroup>
             </AccordionDetails>
           </Accordion>
-          <Accordion defaultExpanded={!!attribute}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedAttributes')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-              <EditAttributesView
-                attributes={item.attributes}
-                setAttributes={(attributes) => setItem({ ...item, attributes })}
-                definitions={{ ...commonUserAttributes, ...userAttributes }}
-                focusAttribute={attribute}
-              />
-            </AccordionDetails>
-          </Accordion>
+          <EditAttributesAccordion
+            attribute={attribute}
+            attributes={item.attributes}
+            setAttributes={(attributes) => setItem({ ...item, attributes })}
+            definitions={{ ...commonUserAttributes, ...userAttributes }}
+            focusAttribute={attribute}
+          />
+          {registrationEnabled && item.id === currentUser.id && !manager && (
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="subtitle1" color="error">
+                  {t('userDeleteAccount')}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails className={classes.details}>
+                <TextField
+                  value={deleteEmail}
+                  onChange={(event) => setDeleteEmail(event.target.value)}
+                  label={t('userEmail')}
+                  error={deleteFailed}
+                />
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleDelete}
+                  startIcon={<DeleteForeverIcon />}
+                >
+                  {t('userDeleteAccount')}
+                </Button>
+              </AccordionDetails>
+            </Accordion>
+          )}
           {item.id && manager && (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -354,7 +390,7 @@ const UserPage = () => {
                   baseId={item.id}
                   keyBase="userId"
                   keyLink="notificationId"
-                  titleGetter={(it) => t(prefixString('event', it.type))}
+                  titleGetter={(it) => formatNotificationTitle(t, it, true)}
                   label={t('sharedNotifications')}
                 />
                 <LinkField

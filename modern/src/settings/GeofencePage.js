@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-
+import { useDispatch } from 'react-redux';
 import {
-  Accordion, AccordionSummary, AccordionDetails, Typography,
+  Accordion, AccordionSummary, AccordionDetails, Typography, TextField,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditItemView from './components/EditItemView';
-import EditAttributesView from './components/EditAttributesView';
+import EditAttributesAccordion from './components/EditAttributesAccordion';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import useGeofenceAttributes from '../common/attributes/useGeofenceAttributes';
 import SettingsMenu from './components/SettingsMenu';
+import SelectField from '../common/components/SelectField';
+import { geofencesActions } from '../store';
 
 const useStyles = makeStyles((theme) => ({
   details: {
@@ -23,11 +24,16 @@ const useStyles = makeStyles((theme) => ({
 
 const GeofencePage = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const t = useTranslation();
 
   const geofenceAttributes = useGeofenceAttributes(t);
 
   const [item, setItem] = useState();
+
+  const onItemSaved = (result) => {
+    dispatch(geofencesActions.update([result]));
+  };
 
   const validate = () => item && item.name;
 
@@ -37,6 +43,7 @@ const GeofencePage = () => {
       item={item}
       setItem={setItem}
       validate={validate}
+      onItemSaved={onItemSaved}
       menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'sharedGeofence']}
     >
@@ -59,17 +66,28 @@ const GeofencePage = () => {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
-                {t('sharedAttributes')}
+                {t('sharedExtra')}
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              <EditAttributesView
-                attributes={item.attributes}
-                setAttributes={(attributes) => setItem({ ...item, attributes })}
-                definitions={geofenceAttributes}
+              <TextField
+                value={item.description || ''}
+                onChange={(event) => setItem({ ...item, description: event.target.value })}
+                label={t('sharedDescription')}
+              />
+              <SelectField
+                value={item.calendarId || 0}
+                onChange={(event) => setItem({ ...item, calendarId: Number(event.target.value) })}
+                endpoint="/api/calendars"
+                label={t('sharedCalendar')}
               />
             </AccordionDetails>
           </Accordion>
+          <EditAttributesAccordion
+            attributes={item.attributes}
+            setAttributes={(attributes) => setItem({ ...item, attributes })}
+            definitions={geofenceAttributes}
+          />
         </>
       )}
     </EditItemView>

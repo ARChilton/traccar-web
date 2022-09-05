@@ -5,6 +5,8 @@ import { LinearProgress, useMediaQuery } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import theme from './common/theme';
 import BottomMenu from './common/components/BottomMenu';
+import SocketController from './SocketController';
+import CachingController from './CachingController';
 
 const useStyles = makeStyles(() => ({
   page: {
@@ -23,18 +25,21 @@ const App = () => {
 
   const initialized = useSelector((state) => !!state.session.user);
 
-  if (!initialized) {
-    return (<LinearProgress />);
-  }
   return (
     <>
-      <div className={classes.page}>
-        <Outlet />
-      </div>
-      {!desktop && (
-        <div className={classes.menu}>
-          <BottomMenu />
-        </div>
+      <SocketController />
+      <CachingController />
+      {!initialized ? (<LinearProgress />) : (
+        <>
+          <div className={classes.page}>
+            <Outlet />
+          </div>
+          {!desktop && (
+            <div className={classes.menu}>
+              <BottomMenu />
+            </div>
+          )}
+        </>
       )}
     </>
   );

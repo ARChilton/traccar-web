@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Divider, List, ListItem, ListItemIcon, ListItemText,
+  Divider, List, ListItemButton, ListItemIcon, ListItemText,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CreateIcon from '@mui/icons-material/Create';
@@ -15,26 +15,26 @@ import PublishIcon from '@mui/icons-material/Publish';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from '../../common/components/LocalizationProvider';
-import { useAdministrator, useManager, useReadonly } from '../../common/util/permissions';
+import { useAdministrator, useManager, useRestriction } from '../../common/util/permissions';
 import useFeatures from '../../common/util/useFeatures';
 
 const MenuItem = ({
   title, link, icon, selected,
 }) => (
-  <ListItem button key={link} component={Link} to={link} selected={selected}>
+  <ListItemButton key={link} component={Link} to={link} selected={selected}>
     <ListItemIcon>{icon}</ListItemIcon>
     <ListItemText primary={title} />
-  </ListItem>
+  </ListItemButton>
 );
 
 const SettingsMenu = () => {
   const t = useTranslation();
   const location = useLocation();
 
-  const readonly = useReadonly();
+  const readonly = useRestriction('readonly');
   const admin = useAdministrator();
   const manager = useManager();
-  const userId = useSelector((state) => state.session.user?.id);
+  const userId = useSelector((state) => state.session.user.id);
 
   const features = useFeatures();
 
@@ -67,12 +67,14 @@ const SettingsMenu = () => {
               icon={<CreateIcon />}
               selected={location.pathname.startsWith('/settings/geofence')}
             />
-            <MenuItem
-              title={t('settingsGroups')}
-              link="/settings/groups"
-              icon={<FolderIcon />}
-              selected={location.pathname.startsWith('/settings/group')}
-            />
+            {!features.disableGroups && (
+              <MenuItem
+                title={t('settingsGroups')}
+                link="/settings/groups"
+                icon={<FolderIcon />}
+                selected={location.pathname.startsWith('/settings/group')}
+              />
+            )}
             {!features.disableDrivers && (
               <MenuItem
                 title={t('sharedDrivers')}

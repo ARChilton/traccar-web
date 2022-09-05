@@ -1,0 +1,27 @@
+name: Legacy App Lint
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - web/**
+  pull_request:
+    branches:
+      - master
+    paths:
+      - web/**
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        cache: npm
+        cache-dependency-path: package-lock.json
+    - run: npm ci --ignore-scripts
+    - run: npm run lint

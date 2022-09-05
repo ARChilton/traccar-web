@@ -1,6 +1,4 @@
-#!/usr/local/bin/python3
-
-# pip3 install --upgrade transifex-python
+#!/usr/bin/env python3
 
 import os
 import optparse

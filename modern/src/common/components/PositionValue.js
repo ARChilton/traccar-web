@@ -1,8 +1,9 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  formatAlarm, formatBoolean, formatCoordinate, formatCourse, formatDistance, formatNumber, formatPercentage, formatSpeed, formatTime,
+  formatAlarm, formatAltitude, formatBoolean, formatCoordinate, formatCourse, formatDistance, formatNumber, formatNumericHours, formatPercentage, formatSpeed, formatTime,
 } from '../util/formatter';
 import { useAttributePreference, usePreference } from '../util/preferences';
 import { useTranslation } from './LocalizationProvider';
@@ -14,10 +15,13 @@ const PositionValue = ({ position, property, attribute }) => {
 
   const admin = useAdministrator();
 
+  const device = useSelector((state) => state.devices.items[position.deviceId]);
+
   const key = property || attribute;
   const value = property ? position[property] : position.attributes[attribute];
 
   const distanceUnit = useAttributePreference('distanceUnit');
+  const altitudeUnit = useAttributePreference('altitudeUnit');
   const speedUnit = useAttributePreference('speedUnit');
   const coordinateFormat = usePreference('coordinateFormat');
 
@@ -35,14 +39,18 @@ const PositionValue = ({ position, property, attribute }) => {
         return formatSpeed(value, speedUnit, t);
       case 'course':
         return formatCourse(value);
+      case 'altitude':
+        return formatAltitude(value, altitudeUnit, t);
       case 'batteryLevel':
-        return formatPercentage(value);
+        return formatPercentage(value, t);
       case 'alarm':
         return formatAlarm(value, t);
       case 'odometer':
       case 'distance':
       case 'totalDistance':
         return formatDistance(value, distanceUnit, t);
+      case 'hours':
+        return formatNumericHours(value, t);
       default:
         if (typeof value === 'number') {
           return formatNumber(value);
@@ -54,20 +62,24 @@ const PositionValue = ({ position, property, attribute }) => {
   };
 
   switch (key) {
+    case 'image':
+    case 'video':
+    case 'audio':
+      return (<Link href={`/api/media/${device.uniqueId}/${value}`} target="_blank">{value}</Link>);
     case 'totalDistance':
     case 'hours':
       return (
         <>
           {formatValue(value)}
           &nbsp;&nbsp;
-          {admin && (<Link component={RouterLink} to={`/settings/accumulators/${position.deviceId}`}>&#9881;</Link>)}
+          {admin && (<Link component={RouterLink} underline="none" to={`/settings/accumulators/${position.deviceId}`}>&#9881;</Link>)}
         </>
       );
     case 'address':
       return (<AddressValue latitude={position.latitude} longitude={position.longitude} originalAddress={value} />);
     case 'network':
       if (value) {
-        return (<Link component={RouterLink} to={`/network/${position.id}`}>{t('sharedInfoTitle')}</Link>);
+        return (<Link component={RouterLink} underline="none" to={`/network/${position.id}`}>{t('sharedInfoTitle')}</Link>);
       }
       return '';
     default:

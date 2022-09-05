@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import {
   useMediaQuery, InputLabel, Select, MenuItem, FormControl, Button, TextField, Link, Snackbar, IconButton, Tooltip,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
-import CachedIcon from '@mui/icons-material/Cached';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +13,12 @@ import { sessionActions } from '../store';
 import { useLocalization, useTranslation } from '../common/components/LocalizationProvider';
 import LoginLayout from './LoginLayout';
 import usePersistedState from '../common/util/usePersistedState';
-import logoSvg from '../resources/images/logo.svg';
-import { nativePostMessage } from '../common/components/NativeInterface';
+import { handleLoginTokenListeners, nativeEnvironment, nativePostMessage } from '../common/components/NativeInterface';
+import LogoImage from './LogoImage';
+import { useCatch } from '../reactHelper';
 
 const useStyles = makeStyles((theme) => ({
-  legacy: {
+  options: {
     position: 'fixed',
     top: theme.spacing(1),
     right: theme.spacing(1),
@@ -25,10 +27,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(2),
-  },
-  logoContainer: {
-    textAlign: 'center',
-    color: theme.palette.primary.main,
   },
   extraContainer: {
     display: 'flex',
@@ -39,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
   },
   resetPassword: {
     cursor: 'pointer',
-    textAlign: 'right',
+    textAlign: 'center',
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -58,13 +57,33 @@ const LoginPage = () => {
   const [email, setEmail] = usePersistedState('loginEmail', '');
   const [password, setPassword] = useState('');
 
-  const registrationEnabled = useSelector((state) => state.session.server?.registration);
-  const emailEnabled = useSelector((state) => state.session.server?.emailEnabled);
+  const registrationEnabled = useSelector((state) => state.session.server.registration);
+  const languageEnabled = useSelector((state) => !state.session.server.attributes['ui.disableLoginLanguage']);
+  const emailEnabled = useSelector((state) => state.session.server.emailEnabled);
 
   const [announcementShown, setAnnouncementShown] = useState(false);
-  const announcement = useSelector((state) => state.session.server?.announcement);
+  const announcement = useSelector((state) => state.session.server.announcement);
 
-  const handleSubmit = async (event) => {
+  const generateLoginToken = async () => {
+    if (nativeEnvironment) {
+      let token = '';
+      try {
+        const expiration = moment().add(6, 'months').toISOString();
+        const response = await fetch('/api/session/token', {
+          method: 'POST',
+          body: new URLSearchParams(`expiration=${expiration}`),
+        });
+        if (response.ok) {
+          token = await response.text();
+        }
+      } catch (error) {
+        token = '';
+      }
+      nativePostMessage(`login|${token}`);
+    }
+  };
+
+  const handlePasswordLogin = async (event) => {
     event.preventDefault();
     try {
       const response = await fetch('/api/session', {
@@ -73,8 +92,8 @@ const LoginPage = () => {
       });
       if (response.ok) {
         const user = await response.json();
+        generateLoginToken();
         dispatch(sessionActions.updateUser(user));
-        nativePostMessage('login');
         navigate('/');
       } else {
         throw Error(await response.text());
@@ -85,27 +104,44 @@ const LoginPage = () => {
     }
   };
 
+  const handleTokenLogin = useCatch(async (token) => {
+    const response = await fetch(`/api/session?token=${encodeURIComponent(token)}`);
+    if (response.ok) {
+      const user = await response.json();
+      dispatch(sessionActions.updateUser(user));
+      navigate('/');
+    } else {
+      throw Error(await response.text());
+    }
+  });
+
   const handleSpecialKey = (e) => {
     if (e.keyCode === 13 && email && password) {
-      handleSubmit(e);
+      handlePasswordLogin(e);
     }
   };
 
+  useEffect(() => nativePostMessage('authentication'), []);
+
+  useEffect(() => {
+    const listener = (token) => handleTokenLogin(token);
+    handleLoginTokenListeners.add(listener);
+    return () => handleLoginTokenListeners.delete(listener);
+  }, []);
+
   return (
     <LoginLayout>
-      <Tooltip title="Switch to Legacy App" className={classes.legacy}>
-        <IconButton onClick={() => window.localStorage.setItem('legacyApp', true) || window.location.replace('/')}>
-          <CachedIcon />
-        </IconButton>
-      </Tooltip>
-      <div className={classes.container}>
-        {useMediaQuery(theme.breakpoints.down('lg')) && (
-          <div className={classes.logoContainer}>
-            <svg height="64" width="240">
-              <use xlinkHref={`${logoSvg}#img`} />
-            </svg>
-          </div>
+      <div className={classes.options}>
+        {nativeEnvironment && (
+          <Tooltip title={t('settingsServer')}>
+            <IconButton onClick={() => navigate('/change-server')}>
+              <LockOpenIcon />
+            </IconButton>
+          </Tooltip>
         )}
+      </div>
+      <div className={classes.container}>
+        {useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage color={theme.palette.primary.main} />}
         <TextField
           required
           error={failed}
@@ -131,7 +167,7 @@ const LoginPage = () => {
           onKeyUp={handleSpecialKey}
         />
         <Button
-          onClick={handleSubmit}
+          onClick={handlePasswordLogin}
           onKeyUp={handleSpecialKey}
           variant="contained"
           color="secondary"
@@ -148,18 +184,21 @@ const LoginPage = () => {
           >
             {t('loginRegister')}
           </Button>
-          <FormControl fullWidth>
-            <InputLabel>{t('loginLanguage')}</InputLabel>
-            <Select label={t('loginLanguage')} value={language} onChange={(e) => setLanguage(e.target.value)}>
-              {languageList.map((it) => <MenuItem key={it.code} value={it.code}>{it.name}</MenuItem>)}
-            </Select>
-          </FormControl>
+          {languageEnabled && (
+            <FormControl fullWidth>
+              <InputLabel>{t('loginLanguage')}</InputLabel>
+              <Select label={t('loginLanguage')} value={language} onChange={(e) => setLanguage(e.target.value)}>
+                {languageList.map((it) => <MenuItem key={it.code} value={it.code}>{it.name}</MenuItem>)}
+              </Select>
+            </FormControl>
+          )}
         </div>
         {emailEnabled && (
           <Link
             onClick={() => navigate('/reset-password')}
             className={classes.resetPassword}
             underline="none"
+            variant="caption"
           >
             {t('loginReset')}
           </Link>

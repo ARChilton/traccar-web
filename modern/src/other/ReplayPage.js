@@ -2,11 +2,12 @@ import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
 import {
-  Grid, IconButton, Paper, Slider, Toolbar, Tooltip, Typography,
+  IconButton, Paper, Slider, Toolbar, Typography,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SettingsIcon from '@mui/icons-material/Settings';
+import TuneIcon from '@mui/icons-material/Tune';
+import DownloadIcon from '@mui/icons-material/Download';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import FastForwardIcon from '@mui/icons-material/FastForward';
@@ -20,6 +21,8 @@ import { formatTime } from '../common/util/formatter';
 import ReportFilter from '../reports/components/ReportFilter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { useCatch } from '../reactHelper';
+import MapCamera from '../map/MapCamera';
+import MapGeofence from '../map/MapGeofence';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,12 +73,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TimeLabel = ({ children, open, value }) => (
-  <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
-    {children}
-  </Tooltip>
-);
-
 const ReplayPage = () => {
   const t = useTranslation();
   const classes = useStyles();
@@ -87,6 +84,8 @@ const ReplayPage = () => {
   const [positions, setPositions] = useState([]);
   const [index, setIndex] = useState(0);
   const [selectedDeviceId, setSelectedDeviceId] = useState(defaultDeviceId);
+  const [from, setFrom] = useState();
+  const [to, setTo] = useState();
   const [expanded, setExpanded] = useState(true);
   const [playing, setPlaying] = useState(false);
 
@@ -101,7 +100,9 @@ const ReplayPage = () => {
   });
 
   const onClick = useCallback((positionId) => {
-    navigate(`/position/${positionId}`);
+    if (positionId) {
+      navigate(`/position/${positionId}`);
+    }
   }, [navigate]);
 
   useEffect(() => {
@@ -123,10 +124,12 @@ const ReplayPage = () => {
     }
   }, [index, positions]);
 
-  const handleSubmit = useCatch(async ({ deviceId, from, to, headers }) => {
+  const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
     setSelectedDeviceId(deviceId);
+    setFrom(from);
+    setTo(to);
     const query = new URLSearchParams({ deviceId, from, to });
-    const response = await fetch(`/api/positions?${query.toString()}`, { headers });
+    const response = await fetch(`/api/positions?${query.toString()}`);
     if (response.ok) {
       setIndex(0);
       const positions = await response.json();
@@ -141,14 +144,21 @@ const ReplayPage = () => {
     }
   });
 
+  const handleDownload = () => {
+    const query = new URLSearchParams({ deviceId: selectedDeviceId, from, to });
+    window.location.assign(`/api/positions/kml?${query.toString()}`);
+  };
+
   return (
     <div className={classes.root}>
       <MapView>
+        <MapGeofence />
         <MapRoutePath positions={positions} />
         {index < positions.length && (
           <MapPositions positions={[positions[index]]} onClick={onClick} />
         )}
       </MapView>
+      <MapCamera positions={positions} />
       <div className={classes.sidebar}>
         <Paper elevation={3} square>
           <Toolbar>
@@ -157,11 +167,14 @@ const ReplayPage = () => {
             </IconButton>
             <Typography variant="h6" className={classes.title}>{t('reportReplay')}</Typography>
             {!expanded && (
-              <Grid item>
-                <IconButton onClick={() => setExpanded(true)}>
-                  <SettingsIcon />
+              <>
+                <IconButton onClick={handleDownload}>
+                  <DownloadIcon />
                 </IconButton>
-              </Grid>
+                <IconButton edge="end" onClick={() => setExpanded(true)}>
+                  <TuneIcon />
+                </IconButton>
+              </>
             )}
           </Toolbar>
         </Paper>
@@ -176,9 +189,6 @@ const ReplayPage = () => {
                 marks={positions.map((_, index) => ({ value: index }))}
                 value={index}
                 onChange={(_, index) => setIndex(index)}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(i) => (i < positions.length ? formatTime(positions[i]) : '')}
-                ValueLabelComponent={TimeLabel}
               />
               <div className={classes.controls}>
                 {`${index + 1}/${positions.length}`}

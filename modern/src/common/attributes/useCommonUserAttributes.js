@@ -33,6 +33,14 @@ export default (t) => useMemo(() => ({
     name: t('attributeNotificationTokens'),
     type: 'string',
   },
+  'ui.disableGroups': {
+    name: t('attributeUiDisableGroups'),
+    type: 'boolean',
+  },
+  'ui.disableAttributes': {
+    name: t('attributeUiDisableAttributes'),
+    type: 'boolean',
+  },
   'ui.disableEvents': {
     name: t('attributeUiDisableEvents'),
     type: 'boolean',
@@ -57,7 +65,7 @@ export default (t) => useMemo(() => ({
     name: t('attributeUiDisableMaintenance'),
     type: 'boolean',
   },
-  /* 'web.liveRouteLength': {
+  'web.liveRouteLength': {
     name: t('attributeWebLiveRouteLength'),
     type: 'number',
   },
@@ -69,8 +77,8 @@ export default (t) => useMemo(() => ({
     name: t('attributeWebMaxZoom'),
     type: 'number',
   },
-  'ui.hidePositionAttributes': {
-    name: t('attributeUiHidePositionAttributes'),
-    type: 'string',
-  }, */
+  iconScale: {
+    name: t('sharedIconScale'),
+    type: 'number',
+  },
 }), [t]);

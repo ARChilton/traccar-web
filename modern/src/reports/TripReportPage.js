@@ -19,6 +19,10 @@ import useReportStyles from './common/useReportStyles';
 import MapView from '../map/core/MapView';
 import MapRoutePath from '../map/MapRoutePath';
 import AddressValue from '../common/components/AddressValue';
+import TableShimmer from '../common/components/TableShimmer';
+import MapMarkers from '../map/MapMarkers';
+import MapCamera from '../map/MapCamera';
+import MapGeofence from '../map/MapGeofence';
 
 const columnsArray = [
   ['startTime', 'reportStartTime'],
@@ -46,8 +50,22 @@ const TripReportPage = () => {
 
   const [columns, setColumns] = usePersistedState('tripColumns', ['startTime', 'endTime', 'distance', 'averageSpeed']);
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [route, setRoute] = useState(null);
+
+  const createMarkers = () => ([
+    {
+      latitude: selectedItem.startLat,
+      longitude: selectedItem.startLon,
+      color: 'negative',
+    },
+    {
+      latitude: selectedItem.endLat,
+      longitude: selectedItem.endLon,
+      color: 'positive',
+    },
+  ]);
 
   useEffectAsync(async () => {
     if (selectedItem) {
@@ -71,20 +89,29 @@ const TripReportPage = () => {
     }
   }, [selectedItem]);
 
-  const handleSubmit = useCatch(async ({ deviceId, from, to, mail, headers }) => {
-    const query = new URLSearchParams({ deviceId, from, to, mail });
-    const response = await fetch(`/api/reports/trips?${query.toString()}`, { headers });
-    if (response.ok) {
-      const contentType = response.headers.get('content-type');
-      if (contentType) {
-        if (contentType === 'application/json') {
-          setItems(await response.json());
-        } else {
-          window.location.assign(window.URL.createObjectURL(await response.blob()));
-        }
+  const handleSubmit = useCatch(async ({ deviceId, from, to, type }) => {
+    const query = new URLSearchParams({ deviceId, from, to });
+    if (type === 'export') {
+      window.location.assign(`/api/reports/trips/xlsx?${query.toString()}`);
+    } else if (type === 'mail') {
+      const response = await fetch(`/api/reports/trips/mail?${query.toString()}`);
+      if (!response.ok) {
+        throw Error(await response.text());
       }
     } else {
-      throw Error(await response.text());
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/reports/trips?${query.toString()}`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (response.ok) {
+          setItems(await response.json());
+        } else {
+          throw Error(await response.text());
+        }
+      } finally {
+        setLoading(false);
+      }
     }
   });
 
@@ -119,7 +146,14 @@ const TripReportPage = () => {
         {selectedItem && (
           <div className={classes.containerMap}>
             <MapView>
-              {route && <MapRoutePath positions={route} />}
+              <MapGeofence />
+              {route && (
+                <>
+                  <MapRoutePath positions={route} />
+                  <MapMarkers markers={createMarkers()} />
+                  <MapCamera positions={route} />
+                </>
+              )}
             </MapView>
           </div>
         )}
@@ -137,7 +171,7 @@ const TripReportPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((item) => (
+              {!loading ? items.map((item) => (
                 <TableRow key={item.startPositionId}>
                   <TableCell className={classes.columnAction} padding="none">
                     {selectedItem === item ? (
@@ -156,7 +190,7 @@ const TripReportPage = () => {
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
+              )) : (<TableShimmer columns={columns.length + 1} startAction />)}
             </TableBody>
           </Table>
         </div>

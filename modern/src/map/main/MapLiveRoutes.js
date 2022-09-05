@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
-
+import { useId, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 // import { useTheme } from '@mui/styles';
 import { map } from '../core/MapView';
 import { usePrevious } from '../../reactHelper';
+import { useAttributePreference } from '../../common/util/preferences';
 
 const MapLiveRoutes = () => {
-  const id = 'liveRoute';
+  const id = useId();
 
   // const theme = useTheme();
+
+  const liveRouteLength = useAttributePreference('web.liveRouteLength', 10);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const currentDeviceId = usePrevious(selectedDeviceId);
@@ -61,9 +63,9 @@ const MapLiveRoutes = () => {
         setRoute([position]);
       }
     } else if (position) {
-      const last = route.findLast(() => true);
+      const last = route.at(-1);
       if (!last || (last.latitude !== position.latitude && last.longitude !== position.longitude)) {
-        setRoute([...route.slice(-9), position]);
+        setRoute([...route.slice(1 - liveRouteLength), position]);
       }
     }
   }, [selectedDeviceId, currentDeviceId, position, route]);

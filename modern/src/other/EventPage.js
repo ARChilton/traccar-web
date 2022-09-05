@@ -9,7 +9,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffectAsync } from '../reactHelper';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import MapView from '../map/core/MapView';
+import MapCamera from '../map/MapCamera';
 import MapPositions from '../map/MapPositions';
+import MapGeofence from '../map/MapGeofence';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -69,8 +71,10 @@ const EventPage = () => {
       </AppBar>
       <div className={classes.mapContainer}>
         <MapView>
+          <MapGeofence />
           {position && <MapPositions positions={[position]} />}
         </MapView>
+        {position && <MapCamera latitude={position.latitude} longitude={position.longitude} />}
       </div>
     </div>
   );

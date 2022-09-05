@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffectAsync } from '../../reactHelper';
 import { sessionActions } from '../../store';
 
+export const nativeEnvironment = window.appInterface || (window.webkit && window.webkit.messageHandlers.appInterface);
+
 export const nativePostMessage = (message) => {
   if (window.webkit && window.webkit.messageHandlers.appInterface) {
     window.webkit.messageHandlers.appInterface.postMessage(message);
@@ -12,51 +14,57 @@ export const nativePostMessage = (message) => {
   }
 };
 
-const listeners = new Set();
+export const handleLoginTokenListeners = new Set();
+window.handleLoginToken = (token) => {
+  handleLoginTokenListeners.forEach((listener) => listener(token));
+};
+
+const updateNotificationTokenListeners = new Set();
 window.updateNotificationToken = (token) => {
-  listeners.forEach((listener) => listener(token));
+  updateNotificationTokenListeners.forEach((listener) => listener(token));
 };
 
 const NativeInterface = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.session.user);
-  const [token, setToken] = useState(null);
+  const [notificationToken, setNotificationToken] = useState(null);
 
   useEffect(() => {
-    const listener = (token) => setToken(token);
-    listeners.add(listener);
-    return () => {
-      listeners.delete(listener);
-    };
-  }, [setToken]);
+    const listener = (token) => setNotificationToken(token);
+    updateNotificationTokenListeners.add(listener);
+    return () => updateNotificationTokenListeners.delete(listener);
+  }, [setNotificationToken]);
 
   useEffectAsync(async () => {
-    if (user && token) {
-      setToken(null);
+    if (user && notificationToken) {
+      window.localStorage.setItem('notificationToken', notificationToken);
+      setNotificationToken(null);
 
       const tokens = user.attributes.notificationTokens?.split(',') || [];
-      const updatedUser = {
-        ...user,
-        attributes: {
-          ...user.attributes,
-          notificationTokens: [...tokens, token].join(','),
-        },
-      };
+      if (!tokens.includes(notificationToken)) {
+        const updatedUser = {
+          ...user,
+          attributes: {
+            ...user.attributes,
+            notificationTokens: [...tokens.slice(-2), notificationToken].join(','),
+          },
+        };
 
-      const response = await fetch(`/api/users/${user.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedUser),
-      });
+        const response = await fetch(`/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedUser),
+        });
 
-      if (response.ok) {
-        dispatch(sessionActions.updateUser(await response.json()));
-      } else {
-        throw Error(await response.text());
+        if (response.ok) {
+          dispatch(sessionActions.updateUser(await response.json()));
+        } else {
+          throw Error(await response.text());
+        }
       }
     }
-  }, [user, token, setToken]);
+  }, [user, notificationToken, setNotificationToken]);
 
   return null;
 };

@@ -1,11 +1,10 @@
-import { map } from './core/MapView';
-import maplibregl from 'maplibre-gl';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/styles';
+import { useId, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { map } from './core/MapView';
 
 const MapRoutePath = ({ positions }) => {
-  const id = 'replay';
+  const id = useId();
 
   const theme = useTheme();
 
@@ -47,20 +46,20 @@ const MapRoutePath = ({ positions }) => {
         'line-width': 8,
         'line-opacity': 0.6,
       },
-    })
+    });
 
     return () => {
       if (map.getLayer(id)) {
-        map.removeLayer(id)
+        map.removeLayer(id);
       }
       if (map.getSource(id)) {
-        map.removeSource(id)
+        map.removeSource(id);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
-    const coordinates = positions.map((item) => [item.longitude, item.latitude])
+    const coordinates = positions.map((item) => [item.longitude, item.latitude]);
     map.getSource(id).setData({
       type: 'Feature',
       geometry: {
@@ -71,17 +70,9 @@ const MapRoutePath = ({ positions }) => {
         color: reportColor,
       },
     });
-    if (coordinates.length) {
-      const bounds = coordinates.reduce((bounds, item) => bounds.extend(item), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
-      const canvas = map.getCanvas();
-      map.fitBounds(bounds, {
-        padding: Math.min(canvas.width, canvas.height) * 0.1,
-        duration: 0,
-      });
-    }
   }, [positions, reportColor]);
 
-  return null
-}
+  return null;
+};
 
 export default MapRoutePath;
