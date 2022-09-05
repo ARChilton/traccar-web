@@ -25,15 +25,22 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import BottomMenu from '../common/components/BottomMenu';
 import CloseIcon from '@mui/icons-material/Close';
-import DevicesList from './DevicesList';
 import ListIcon from '@mui/icons-material/ViewList';
+import TuneIcon from '@mui/icons-material/Tune';
+import { makeStyles } from '@mui/styles';
+import moment from 'moment';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
+import BottomMenu from '../common/components/BottomMenu';
+import DevicesList from './DevicesList';
 import MapAccuracy from '../map/main/MapAccuracy';
+
+import MapGeofence from '../map/MapGeofence';
 import MapCurrentLocation from '../map/MapCurrentLocation';
 import MapDefaultCamera from '../map/main/MapDefaultCamera';
 import MapDirection from '../map/MapDirection';
-import MapGeofence from '../map/main/MapGeofence';
 import MapLiveRoutes from '../map/main/MapLiveRoutes';
 import MapOverlay from '../map/overlay/MapOverlay';
 import MapPadding from '../map/MapPadding';
@@ -42,16 +49,17 @@ import MapSelectedDevice from '../map/main/MapSelectedDevice';
 import MapView from '../map/core/MapView';
 import PoiMap from '../map/main/PoiMap';
 import StatusCard from './StatusCard';
-import TuneIcon from '@mui/icons-material/Tune';
 import { devicesActions } from '../store';
-import { makeStyles } from '@mui/styles';
-import moment from 'moment';
 import { useDeviceReadonly } from '../common/util/permissions';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useNavigate } from 'react-router-dom';
+
 import usePersistedState from '../common/util/usePersistedState';
-import { useTheme } from '@mui/material/styles';
 import { useTranslation } from '../common/components/LocalizationProvider';
+
+import MapGeocoder from '../map/geocoder/MapGeocoder';
+import MapScale from '../map/MapScale';
+import MapNotification from '../map/notification/MapNotification';
+import EventsDrawer from './EventsDrawer';
+import useFeatures from '../common/util/useFeatures';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -157,7 +165,9 @@ const MainPage = () => {
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
   const phone = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [mapMapOnSelect] = usePersistedState('mapOnSelect', false);
+  const features = useFeatures();
+
+  const [mapOnSelect] = usePersistedState('mapOnSelect', false);
 
   const [mapLiveRoutes] = usePersistedState('mapLiveRoutes', false);
 
@@ -179,19 +189,25 @@ const MainPage = () => {
   const filterRef = useRef();
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [devicesOpen, setDevicesOpen] = useState(false);
+  const [eventsOpen, setEventsOpen] = useState(false);
+
+  const eventHandler = useCallback(() => setEventsOpen(true), [setEventsOpen]);
+  const eventsAvailable = useSelector((state) => !!state.events.items.length);
 
   const handleClose = () => {
-    setCollapsed(!collapsed);
+    setDevicesOpen(!devicesOpen);
   };
 
-  useEffect(() => setCollapsed(!desktop), [desktop]);
+  const deviceStatusCount = (status) => Object.values(devices).filter((d) => d.status === status).length;
+
+  useEffect(() => setDevicesOpen(desktop), [desktop]);
 
   useEffect(() => {
-    if (!desktop && mapMapOnSelect && selectedDeviceId) {
-      setCollapsed(true);
+    if (!desktop && mapOnSelect && selectedDeviceId) {
+      setDevicesOpen(false);
     }
-  }, [desktop, mapMapOnSelect, selectedDeviceId]);
+  }, [desktop, mapOnSelect, selectedDeviceId]);
 
   const onClick = useCallback((_, deviceId) => {
     dispatch(devicesActions.select(deviceId));
@@ -201,7 +217,24 @@ const MainPage = () => {
     const filtered = Object.values(devices)
       .filter((device) => !filterStatuses.length || filterStatuses.includes(device.status))
       .filter((device) => !filterGroups.length || filterGroups.includes(device.groupId))
-      .filter((device) => `${device.name} ${device.uniqueId}`.toLowerCase().includes(filterKeyword.toLowerCase()));
+      .filter((device) => {
+        const keyword = filterKeyword.toLowerCase();
+        return [device.name, device.uniqueId, device.phone, device.model, device.contact].some((s) => s && s.toLowerCase().includes(keyword));
+      });
+    switch (filterSort) {
+      case 'name':
+        filtered.sort((device1, device2) => device1.name.localeCompare(device2.name));
+        break;
+      case 'lastUpdate':
+        filtered.sort((device1, device2) => {
+          const time1 = device1.lastUpdate ? moment(device1.lastUpdate).valueOf() : 0;
+          const time2 = device2.lastUpdate ? moment(device2.lastUpdate).valueOf() : 0;
+          return time2 - time1;
+        });
+        break;
+      default:
+        break;
+    }
     if (filterSort === 'lastUpdate') {
       filtered.sort((device1, device2) => {
         const time1 = device1.lastUpdate ? moment(device1.lastUpdate).valueOf() : 0;
@@ -220,17 +253,17 @@ const MainPage = () => {
       <MapView>
         <MapOverlay />
         <MapGeofence />
-        <MapAccuracy />
+        <MapAccuracy positions={filteredPositions} />
         {mapLiveRoutes && <MapLiveRoutes />}
-        <MapPositions positions={filteredPositions} onClick={onClick} showStatus />
-        {selectedPosition && selectedPosition.course && (
-          <MapDirection position={selectedPosition} />
-        )}
+        <MapPositions positions={filteredPositions} onClick={onClick} selectedPosition={selectedPosition} showStatus />
         <MapDefaultCamera />
         <MapSelectedDevice />
         <PoiMap />
       </MapView>
+      <MapScale />
       <MapCurrentLocation />
+      <MapGeocoder />
+      {!features.disableEvents && <MapNotification enabled={eventsAvailable} onClick={eventHandler} />}
       {desktop && <MapPadding left={parseInt(theme.dimensions.drawerWidthDesktop, 10)} />}
       <Button
         variant="contained"
@@ -243,7 +276,7 @@ const MainPage = () => {
         <ListIcon />
         <div className={classes.sidebarToggleText}>{t('deviceTitle')}</div>
       </Button>
-      <Paper square elevation={3} className={`${classes.sidebar} ${collapsed && classes.sidebarCollapsed}`}>
+      <Paper square elevation={3} className={`${classes.sidebar} ${!devicesOpen && classes.sidebarCollapsed}`}>
         <Paper square elevation={3} className={classes.toolbarContainer}>
           <Toolbar className={classes.toolbar} disableGutters>
             {!desktop && (
@@ -258,7 +291,7 @@ const MainPage = () => {
               onChange={(event) => setFilterKeyword(event.target.value)}
               endAdornment={(
                 <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setFilterAnchorEl(filterRef.current)}>
+                  <IconButton size="small" edge="end" onClick={() => setFilterAnchorEl(filterRef.current)}>
                     <Badge color="info" variant="dot" invisible={!filterStatuses.length && !filterGroups.length}>
                       <TuneIcon fontSize="small" />
                     </Badge>
@@ -286,9 +319,9 @@ const MainPage = () => {
                     onChange={(e) => setFilterStatuses(e.target.value)}
                     multiple
                   >
-                    <MenuItem value="online">{t('deviceStatusOnline')}</MenuItem>
-                    <MenuItem value="offline">{t('deviceStatusOffline')}</MenuItem>
-                    <MenuItem value="unknown">{t('deviceStatusUnknown')}</MenuItem>
+                    <MenuItem value="online">{`${t('deviceStatusOnline')} (${deviceStatusCount('online')})`}</MenuItem>
+                    <MenuItem value="offline">{`${t('deviceStatusOffline')} (${deviceStatusCount('offline')})`}</MenuItem>
+                    <MenuItem value="unknown">{`${t('deviceStatusUnknown')} (${deviceStatusCount('unknown')})`}</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl>
@@ -299,7 +332,9 @@ const MainPage = () => {
                     onChange={(e) => setFilterGroups(e.target.value)}
                     multiple
                   >
-                    {Object.values(groups).map((group) => (<MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>))}
+                    {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
+                      <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl>
@@ -311,6 +346,7 @@ const MainPage = () => {
                     displayEmpty
                   >
                     <MenuItem value="">{'\u00a0'}</MenuItem>
+                    <MenuItem value="name">{t('sharedName')}</MenuItem>
                     <MenuItem value="lastUpdate">{t('deviceLastUpdate')}</MenuItem>
                   </Select>
                 </FormControl>
@@ -341,6 +377,7 @@ const MainPage = () => {
           <BottomMenu />
         </div>
       )}
+      {!features.disableEvents && <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />}
       {selectedDeviceId && (
         <div className={classes.statusCard}>
           <StatusCard
