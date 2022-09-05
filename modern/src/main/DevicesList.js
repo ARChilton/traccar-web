@@ -90,15 +90,6 @@ const DeviceRow = ({ data, index, style }) => {
     return item[key];
   };
 
-  /*const secondaryText = () => {
-    if (item.status === 'online' || !item.lastUpdate) {
-      return formatStatus(item.status, t);
-    }
-    const timeSince = moment(item.lastUpdate).fromNow();
-    return needsUsing ? `${timeSince} - ${dayCountSinceLastTurnOn} days ago` : timeSince;
-  };
-   */
-
   const secondaryText = () => {
     let status;
     if (item.status === 'online' || !item.lastUpdate) {
@@ -109,7 +100,10 @@ const DeviceRow = ({ data, index, style }) => {
     return (
       <>
         {deviceSecondary && item[deviceSecondary] && `${formatProperty(deviceSecondary)} • `}
-        <span className={classes[getStatusColor(item.status)]}>{status}</span>
+        <span className={classes[getStatusColor(item.status)]}>
+          {status}
+          {needsUsing ? ` - ${dayCountSinceLastTurnOn} days ago` : null}
+        </span>
       </>
     );
   };
@@ -121,7 +115,8 @@ const DeviceRow = ({ data, index, style }) => {
         className={classes.listItem}
         onClick={() => dispatch(devicesActions.select(item.id))}
         disabled={!admin && item.disabled}
-        style={needsUsing ? { background: needsUsing } : {}}>
+        style={needsUsing ? { background: needsUsing } : {}}
+      >
         <ListItemAvatar>
           <Avatar>
             <img className={classes.icon} src={mapIcons[mapIconKey(item.category)]} alt="" />
