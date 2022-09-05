@@ -40,7 +40,6 @@ import MapAccuracy from '../map/main/MapAccuracy';
 import MapGeofence from '../map/MapGeofence';
 import MapCurrentLocation from '../map/MapCurrentLocation';
 import MapDefaultCamera from '../map/main/MapDefaultCamera';
-import MapDirection from '../map/MapDirection';
 import MapLiveRoutes from '../map/main/MapLiveRoutes';
 import MapOverlay from '../map/overlay/MapOverlay';
 import MapPadding from '../map/MapPadding';
