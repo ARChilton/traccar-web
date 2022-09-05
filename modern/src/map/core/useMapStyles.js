@@ -182,7 +182,7 @@ export default () => {
     },
     {
       id: 'ordnanceSurvey',
-      title: t('mapOrdnanceSurvey'),
+      title: 'OS mastermap',
       style: 'https://api.os.uk/maps/vector/v1/vts/resources/styles?key=EAZ8p83u72FTGiLjLC2MsTAl1ko6XQHC',
       transformRequest: (url) => ({
         url: `${url}&srs=3857`,
