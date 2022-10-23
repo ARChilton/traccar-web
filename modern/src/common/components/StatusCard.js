@@ -24,14 +24,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PendingIcon from '@mui/icons-material/Pending';
 
-import { useTranslation } from '../common/components/LocalizationProvider';
-import RemoveDialog from '../common/components/RemoveDialog';
-import PositionValue from '../common/components/PositionValue';
-import { useDeviceReadonly, useRestriction } from '../common/util/permissions';
-import usePersistedState from '../common/util/usePersistedState';
-import usePositionAttributes from '../common/attributes/usePositionAttributes';
-import { devicesActions } from '../store';
-import { useCatch, useCatchCallback } from '../reactHelper';
+import { useTranslation } from './LocalizationProvider';
+import RemoveDialog from './RemoveDialog';
+import PositionValue from './PositionValue';
+import { useDeviceReadonly, useRestriction } from '../util/permissions';
+import usePersistedState from '../util/usePersistedState';
+import usePositionAttributes from '../attributes/usePositionAttributes';
+import { devicesActions } from '../../store';
+import { useCatch, useCatchCallback } from '../../reactHelper';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -77,6 +77,20 @@ const useStyles = makeStyles((theme) => ({
   actions: {
     justifyContent: 'space-between',
   },
+  root: ({ desktopPadding }) => ({
+    position: 'fixed',
+    zIndex: 5,
+    left: '50%',
+    [theme.breakpoints.up('md')]: {
+      left: `calc(50% + ${desktopPadding} / 2)`,
+      bottom: theme.spacing(3),
+    },
+    [theme.breakpoints.down('md')]: {
+      left: '50%',
+      bottom: `calc(${theme.spacing(3)} + ${theme.dimensions.bottomBarHeight}px)`,
+    },
+    transform: 'translateX(-50%)',
+  }),
 }));
 
 const StatusRow = ({ name, content }) => {
@@ -94,8 +108,8 @@ const StatusRow = ({ name, content }) => {
   );
 };
 
-const StatusCard = ({ deviceId, onClose }) => {
-  const classes = useStyles();
+const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPadding = 0 }) => {
+  const classes = useStyles({ desktopPadding });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -104,7 +118,6 @@ const StatusCard = ({ deviceId, onClose }) => {
   const deviceReadonly = useDeviceReadonly();
 
   const device = useSelector((state) => state.devices.items[deviceId]);
-  const position = useSelector((state) => state.positions.items[deviceId]);
 
   const deviceImage = device?.attributes?.deviceImage;
 
@@ -154,7 +167,7 @@ const StatusCard = ({ deviceId, onClose }) => {
   }, [navigate]);
 
   return (
-    <>
+    <div className={classes.root}>
       {device && (
         <Draggable
           handle={`.${classes.media}, .${classes.header}`}
@@ -218,25 +231,25 @@ const StatusCard = ({ deviceId, onClose }) => {
               </IconButton>
               <IconButton
                 onClick={() => navigate('/replay')}
-                disabled={!position}
+                disabled={disableActions || !position}
               >
                 <ReplayIcon />
               </IconButton>
               <IconButton
                 onClick={() => navigate(`/settings/command-send/${deviceId}`)}
-                disabled={readonly}
+                disabled={disableActions || readonly}
               >
                 <PublishIcon />
               </IconButton>
               <IconButton
                 onClick={() => navigate(`/settings/device/${deviceId}`)}
-                disabled={deviceReadonly}
+                disabled={disableActions || deviceReadonly}
               >
                 <EditIcon />
               </IconButton>
               <IconButton
                 onClick={() => setRemoving(true)}
-                disabled={deviceReadonly}
+                disabled={disableActions || deviceReadonly}
                 className={classes.negative}
               >
                 <DeleteIcon />
@@ -260,7 +273,7 @@ const StatusCard = ({ deviceId, onClose }) => {
         itemId={deviceId}
         onResult={(removed) => handleRemove(removed)}
       />
-    </>
+    </div>
   );
 };
 
