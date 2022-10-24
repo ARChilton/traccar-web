@@ -38,7 +38,7 @@ export default () => {
     {
       id: 'openWeatherPrecipitation',
       title: t('mapOpenWeatherPrecipitation'),
-      source: sourceOpenWeather('precipitation_new', openWeatherKey),
+      source: sourceOpenWeather('precipitation', openWeatherKey),
       available: !!openWeatherKey,
       attribute: 'openWeatherKey',
     },
