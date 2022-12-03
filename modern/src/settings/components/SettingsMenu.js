@@ -12,10 +12,13 @@ import BuildIcon from '@mui/icons-material/Build';
 import PeopleIcon from '@mui/icons-material/People';
 import TodayIcon from '@mui/icons-material/Today';
 import PublishIcon from '@mui/icons-material/Publish';
+import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from '../../common/components/LocalizationProvider';
-import { useAdministrator, useManager, useRestriction } from '../../common/util/permissions';
+import {
+  useAdministrator, useDeviceReadonly, useManager, useRestriction,
+} from '../../common/util/permissions';
 import useFeatures from '../../common/util/useFeatures';
 
 const MenuItem = ({
@@ -32,6 +35,7 @@ const SettingsMenu = () => {
   const location = useLocation();
 
   const readonly = useRestriction('readonly');
+  const deviceReadonly = useDeviceReadonly();
   const admin = useAdministrator();
   const manager = useManager();
   const userId = useSelector((state) => state.session.user.id);
@@ -61,6 +65,14 @@ const SettingsMenu = () => {
               icon={<PersonIcon />}
               selected={location.pathname === `/settings/user/${userId}`}
             />
+            {!deviceReadonly && (
+              <MenuItem
+                title={t('deviceTitle')}
+                link="/settings/devices"
+                icon={<SmartphoneIcon />}
+                selected={location.pathname.startsWith('/settings/device')}
+              />
+            )}
             <MenuItem
               title={t('sharedGeofences')}
               link="/geofences"
@@ -111,7 +123,7 @@ const SettingsMenu = () => {
               title={t('sharedSavedCommands')}
               link="/settings/commands"
               icon={<PublishIcon />}
-              selected={location.pathname.startsWith('/settings/command')}
+              selected={location.pathname.startsWith('/settings/command') && !location.pathname.startsWith('/settings/command-send')}
             />
           </>
         )}

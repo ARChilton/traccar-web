@@ -11,7 +11,6 @@ import PoiMap from '../map/main/PoiMap';
 import MapPadding from '../map/MapPadding';
 import { devicesActions } from '../store';
 import MapDefaultCamera from '../map/main/MapDefaultCamera';
-import usePersistedState from '../common/util/usePersistedState';
 import MapLiveRoutes from '../map/main/MapLiveRoutes';
 import MapPositions from '../map/MapPositions';
 import MapOverlay from '../map/overlay/MapOverlay';
@@ -30,8 +29,6 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   const features = useFeatures();
 
-  const [mapLiveRoutes] = usePersistedState('mapLiveRoutes', false);
-
   const onMarkerClick = useCallback((_, deviceId) => {
     dispatch(devicesActions.select(deviceId));
   }, [dispatch]);
@@ -42,7 +39,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         <MapOverlay />
         <MapGeofence />
         <MapAccuracy positions={filteredPositions} />
-        {mapLiveRoutes && <MapLiveRoutes />}
+        <MapLiveRoutes />
         <MapPositions
           positions={filteredPositions}
           onClick={onMarkerClick}

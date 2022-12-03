@@ -15,6 +15,7 @@ import EventsDrawer from './EventsDrawer';
 import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
+import { useAttributePreference } from '../common/util/preferences';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,17 +64,17 @@ const MainPage = () => {
 
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
-  const [mapOnSelect] = usePersistedState('mapOnSelect', true);
+  const mapOnSelect = useAttributePreference('mapOnSelect', true);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
-  const positions = useSelector((state) => state.positions.items);
+  const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
 
   const [filteredDevices, setFilteredDevices] = useState([]);
 
-  const [filter, setFilter] = useState({
-    keyword: '',
+  const [keyword, setKeyword] = useState('');
+  const [filter, setFilter] = usePersistedState('filter', {
     statuses: [],
     groups: [],
   });
@@ -91,7 +92,7 @@ const MainPage = () => {
     }
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
-  useFilter(filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
+  useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
 
   return (
     <div className={classes.root}>
@@ -105,8 +106,11 @@ const MainPage = () => {
       <div className={classes.sidebar}>
         <Paper square elevation={3} className={classes.header}>
           <MainToolbar
+            filteredDevices={filteredDevices}
             devicesOpen={devicesOpen}
             setDevicesOpen={setDevicesOpen}
+            keyword={keyword}
+            setKeyword={setKeyword}
             filter={filter}
             setFilter={setFilter}
             filterSort={filterSort}

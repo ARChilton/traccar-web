@@ -1,13 +1,12 @@
 import { useId, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { map } from './core/MapView';
-import { getStatusColor } from '../common/util/formatter';
-import usePersistedState from '../common/util/usePersistedState';
+import { formatTime, getStatusColor } from '../common/util/formatter';
 import { mapIconKey } from './core/preloadImages';
 import { findFonts } from './core/mapUtil';
-import { useAttributePreference } from '../common/util/preferences';
+import { useAttributePreference, usePreference } from '../common/util/preferences';
 
-const MapPositions = ({ positions, onClick, showStatus, selectedPosition }) => {
+const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleField }) => {
   const id = useId();
   const clusters = `${id}-clusters`;
   const direction = `${id}-direction`;
@@ -15,8 +14,8 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition }) => {
   const devices = useSelector((state) => state.devices.items);
 
   const iconScale = useAttributePreference('iconScale', 1);
-
-  const [mapCluster] = usePersistedState('mapCluster', true);
+  const mapCluster = useAttributePreference('mapCluster', true);
+  const hours12 = usePreference('twelveHourFormat');
 
   const createFeature = (devices, position, selectedPositionId) => {
     const device = devices[position.deviceId];
@@ -24,6 +23,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition }) => {
       id: position.id,
       deviceId: position.deviceId,
       name: device.name,
+      fixTime: formatTime(position.fixTime, 'seconds', hours12),
       category: mapIconKey(device.category),
       color: showStatus ? position.attributes.color || getStatusColor(device.status) : 'neutral',
       rotation: position.course,
@@ -84,7 +84,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition }) => {
         'icon-image': '{category}-{color}',
         'icon-size': iconScale,
         'icon-allow-overlap': true,
-        'text-field': '{name}',
+        'text-field': `{${titleField || 'name'}}`,
         'text-allow-overlap': true,
         'text-anchor': 'bottom',
         'text-offset': [0, -2 * iconScale],

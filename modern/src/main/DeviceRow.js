@@ -19,8 +19,8 @@ import {
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { mapIconKey, mapIcons } from '../map/core/preloadImages';
 import { useAdministrator } from '../common/util/permissions';
-import usePersistedState from '../common/util/usePersistedState';
 import { ReactComponent as EngineIcon } from '../resources/images/data/engine.svg';
+import { useAttributePreference } from '../common/util/preferences';
 import { daysSinceLastTurnOn, needsToTurnOn } from './phoneCreditFunctions';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,12 +28,6 @@ const useStyles = makeStyles((theme) => ({
     width: '25px',
     height: '25px',
     filter: 'brightness(0) invert(1)',
-  },
-  listItem: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: 'white',
-    },
   },
   batteryText: {
     fontSize: '0.75rem',
@@ -61,16 +55,15 @@ const DeviceRow = ({ data, index, style }) => {
 
   const admin = useAdministrator();
 
-  const { items } = data;
-  const item = items[index];
-  const position = useSelector((state) => state.positions.items[item.id]);
+  const item = data[index];
+  const position = useSelector((state) => state.session.positions[item.id]);
   const needsUsing = needsToTurnOn(item)
   const dayCountSinceLastTurnOn = daysSinceLastTurnOn(item)
 
   const geofences = useSelector((state) => state.geofences.items);
 
-  const [devicePrimary] = usePersistedState('devicePrimary', 'name');
-  const [deviceSecondary] = usePersistedState('deviceSecondary', '');
+  const devicePrimary = useAttributePreference('devicePrimary', 'name');
+  const deviceSecondary = useAttributePreference('deviceSecondary', '');
 
   const formatProperty = (key) => {
     if (key === 'geofenceIds') {
@@ -105,7 +98,6 @@ const DeviceRow = ({ data, index, style }) => {
     <div style={style}>
       <ListItemButton
         key={item.id}
-        className={classes.listItem}
         onClick={() => dispatch(devicesActions.select(item.id))}
         disabled={!admin && item.disabled}
         style={needsUsing ? { background: needsUsing } : {}}

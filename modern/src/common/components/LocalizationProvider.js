@@ -24,6 +24,7 @@ import es from '../../resources/l10n/es.json';
 import fa from '../../resources/l10n/fa.json';
 import fi from '../../resources/l10n/fi.json';
 import fr from '../../resources/l10n/fr.json';
+import gl from '../../resources/l10n/gl.json';
 import he from '../../resources/l10n/he.json';
 import hi from '../../resources/l10n/hi.json';
 import hr from '../../resources/l10n/hr.json';
@@ -83,6 +84,7 @@ const languages = {
   fa: { data: fa, name: 'فارسی' },
   fi: { data: fi, name: 'Suomi' },
   fr: { data: fr, name: 'Français' },
+  gl: { data: gl, name: 'Galego' },
   he: { data: he, name: 'עברית' },
   hi: { data: hi, name: 'हिन्दी' },
   hr: { data: hr, name: 'Hrvatski' },
@@ -168,7 +170,9 @@ export const LocalizationProvider = ({ children }) => {
 
   useEffect(() => {
     let selected;
-    if (language.length > 2) {
+    if (language === 'zh') {
+      selected = 'zh-cn';
+    } else if (language.length > 2) {
       selected = `${language.slice(0, 2)}-${language.slice(-2).toLowerCase()}`;
     } else {
       selected = language;
