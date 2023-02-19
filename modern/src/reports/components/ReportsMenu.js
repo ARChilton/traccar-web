@@ -10,9 +10,10 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import RouteIcon from '@mui/icons-material/Route';
+import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '../../common/components/LocalizationProvider';
-import { useAdministrator } from '../../common/util/permissions';
+import { useAdministrator, useRestriction } from '../../common/util/permissions';
 
 const MenuItem = ({
   title, link, icon, selected,
@@ -28,6 +29,7 @@ const ReportsMenu = () => {
   const location = useLocation();
 
   const admin = useAdministrator();
+  const readonly = useRestriction('readonly');
 
   return (
     <>
@@ -74,16 +76,23 @@ const ReportsMenu = () => {
           icon={<RouteIcon />}
         />
       </List>
-      {admin && (
+      {(admin || !readonly) && (
         <>
           <Divider />
           <List>
             <MenuItem
-              title={t('statisticsTitle')}
-              link="/reports/statistics"
-              icon={<BarChartIcon />}
-              selected={location.pathname === '/reports/statistics'}
+              title={t('reportScheduled')}
+              link="/reports/scheduled"
+              icon={<EventRepeatIcon />}
             />
+            {admin && (
+              <MenuItem
+                title={t('statisticsTitle')}
+                link="/reports/statistics"
+                icon={<BarChartIcon />}
+                selected={location.pathname === '/reports/statistics'}
+              />
+            )}
           </List>
         </>
       )}

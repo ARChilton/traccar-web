@@ -48,6 +48,7 @@ import CommandSendPage from './settings/CommandSendPage';
 import App from './App';
 import ChangeServerPage from './other/ChangeServerPage';
 import DevicesPage from './settings/DevicesPage';
+import ScheduledPage from './reports/ScheduledPage';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const Navigation = () => {
       if (response.ok) {
         const items = await response.json();
         if (items.length > 0) {
-          dispatch(devicesActions.select(items[0].id));
+          dispatch(devicesActions.selectId(items[0].id));
         }
       } else {
         throw Error(await response.text());
@@ -141,10 +142,11 @@ const Navigation = () => {
           <Route path="chart" element={<ChartReportPage />} />
           <Route path="event" element={<EventReportPage />} />
           <Route path="route" element={<RouteReportPage />} />
-          <Route path="statistics" element={<StatisticsPage />} />
           <Route path="stop" element={<StopReportPage />} />
           <Route path="summary" element={<SummaryReportPage />} />
           <Route path="trip" element={<TripReportPage />} />
+          <Route path="scheduled" element={<ScheduledPage />} />
+          <Route path="statistics" element={<StatisticsPage />} />
         </Route>
       </Route>
     </Routes>
