@@ -13,7 +13,7 @@ export default [
     'paint': {
       'fill-color': '#3bb2d0',
       'fill-outline-color': '#3bb2d0',
-      'fill-opacity': 0.1
+      'fill-opacity': 0.4
     }
   },
   {
@@ -51,7 +51,7 @@ export default [
     },
     'paint': {
       'line-color': '#3bb2d0',
-      'line-width': 2
+      'line-width': 3,
     }
   },
   {

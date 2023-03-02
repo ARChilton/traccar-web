@@ -15,4 +15,12 @@ export default (t) => useMemo(() => ({
     type: 'number',
     subtype: 'distance',
   },
+  opacity: {
+    name: 'Opacity (min: 0, max: 1)',
+    type: 'number',
+  },
+  lineWidth: {
+    name: 'Line Width',
+    type: 'number',
+  },
 }), [t]);

@@ -34,7 +34,7 @@ const MapGeofence = () => {
         paint: {
           'fill-color': ['get', 'color'],
           'fill-outline-color': ['get', 'color'],
-          'fill-opacity': 0.1,
+          'fill-opacity': ['get', 'opacity'],
         },
       });
       map.addLayer({
@@ -43,7 +43,7 @@ const MapGeofence = () => {
         type: 'line',
         paint: {
           'line-color': ['get', 'color'],
-          'line-width': 2,
+          'line-width': ['get', 'lineWidth'],
         },
       });
       map.addLayer({
@@ -76,7 +76,7 @@ const MapGeofence = () => {
         }
       };
     }
-    return () => {};
+    return () => { };
   }, [mapGeofences]);
 
   useEffect(() => {
