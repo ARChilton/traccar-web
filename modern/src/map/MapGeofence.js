@@ -44,6 +44,7 @@ const MapGeofence = () => {
         paint: {
           'line-color': ['get', 'color'],
           'line-width': ['get', 'lineWidth'],
+          'line-opacity': ['get', 'lineOpacity'],
         },
       });
       map.addLayer({
