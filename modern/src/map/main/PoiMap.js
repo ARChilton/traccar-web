@@ -34,17 +34,23 @@ const PoiMap = () => {
         id: 'poi-point',
         type: 'circle',
         paint: {
-          'circle-radius': 5,
-          'circle-color': theme.palette.colors.geometry,
+          'circle-radius': 8,
+          'circle-color': theme.palette.colors.poi,
+          'circle-opacity': 0.5,
         },
       });
       map.addLayer({
         source: id,
         id: 'poi-line',
         type: 'line',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
         paint: {
-          'line-color': theme.palette.colors.geometry,
-          'line-width': 2,
+          'line-color': theme.palette.colors.poi,
+          'line-width': 20,
+          'line-opacity': 0.3,
         },
       });
       map.addLayer({
@@ -56,11 +62,11 @@ const PoiMap = () => {
           'text-anchor': 'bottom',
           'text-offset': [0, -0.5],
           'text-font': findFonts(map),
-          'text-size': 12,
+          'text-size': 14,
         },
         paint: {
           'text-halo-color': 'white',
-          'text-halo-width': 1,
+          'text-halo-width': 1.5,
         },
       });
       return () => {
@@ -78,7 +84,7 @@ const PoiMap = () => {
         }
       };
     }
-    return () => {};
+    return () => { };
   }, [data]);
 
   return null;

@@ -1,5 +1,5 @@
 import {
-  amber, grey, green, indigo, red, common,
+  amber, grey, green, indigo, red, common, purple,
 } from '@mui/material/colors';
 
 const colors = {
@@ -12,6 +12,7 @@ const colors = {
   negative: red[500],
   neutral: grey[500],
   geometry: '#3bb2d0',
+  poi: purple[500],
 };
 
 export default {
