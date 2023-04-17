@@ -23,4 +23,8 @@ export default (t) => useMemo(() => ({
     name: 'Line Width',
     type: 'number',
   },
+  lineOpacity: {
+    name: 'Line Opacity (min:0, max: 1)',
+    type: 'number',
+  },
 }), [t]);
