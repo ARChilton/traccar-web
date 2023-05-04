@@ -1,4 +1,5 @@
 import {
+  deepOrange,
   amber, grey, green, indigo, red, common, purple,
 } from '@mui/material/colors';
 
@@ -13,6 +14,9 @@ const colors = {
   neutral: grey[500],
   geometry: '#3bb2d0',
   poi: purple[500],
+  route: deepOrange[500],
+  routeWaypoints: deepOrange[800],
+  liveRoute: amber[800],
 };
 
 export default {

@@ -31,8 +31,9 @@ const MapPositions = ({ positions, onClick }) => {
       type: 'circle',
       source: id,
       paint: {
-        'circle-radius': 5,
-        'circle-color': theme.palette.colors.geometry,
+        'circle-radius': 6,
+        'circle-color': theme.palette.colors.routeWaypoints,
+        'circle-opacity': 0.5,
       },
     });
 

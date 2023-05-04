@@ -43,9 +43,9 @@ const MapRoutePath = ({ name, positions, coordinates }) => {
         'line-cap': 'round',
       },
       paint: {
-        'line-color': 'orange',
-        'line-width': 8,
-        'line-opacity': 0.6,
+        'line-color': theme.palette.colors.route,
+        'line-width': 20,
+        'line-opacity': 0.4,
       },
     });
     if (name) {
