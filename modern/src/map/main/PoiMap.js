@@ -1,5 +1,5 @@
 import { useId, useEffect, useState } from 'react';
-import { kml } from '@tmcw/togeojson';
+import { gpx, kml } from '@tmcw/togeojson';
 import { useTheme } from '@mui/styles';
 import { map } from '../core/MapView';
 import { useEffectAsync } from '../../reactHelper';
@@ -19,7 +19,11 @@ const PoiMap = () => {
     if (poiLayer) {
       const file = await fetch(poiLayer);
       const dom = new DOMParser().parseFromString(await file.text(), 'text/xml');
-      setData(kml(dom));
+      if (poiLayer.endsWith('.kml')) {
+        setData(kml(dom))
+      } else {
+        setData(gpx(dom));
+      }
     }
   }, [poiLayer]);
 
