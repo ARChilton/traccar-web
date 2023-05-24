@@ -140,7 +140,7 @@ const DeviceRow = ({ data, index, style }) => {
               </Tooltip>
             )}
             {position.attributes.hasOwnProperty('rssi') && (
-              <Tooltip title={`${t('positionRssi')}: ${position.attributes.rssi} - ${rssiText(position.attributes.rssi)} `}>
+              <Tooltip title={`${t('signal')}: ${position.attributes.rssi} - ${rssiText(position.attributes.rssi)} `}>
                 <IconButton size="small">
                   {position.attributes.rssi > 19 ? (
                     <SignalCellular4BarIcon fontSize="small" className={classes.positive} />
