@@ -286,6 +286,7 @@
     "positionArmed": "Armed",
     "positionAcceleration": "Acceleration",
     "positionTemp": "Temperature",
+    "positionTemp1": "Temperature",
     "positionDeviceTemp": "Device Temperature",
     "positionCoolantTemp": "Coolant Temperature",
     "positionOperator": "Operator",
