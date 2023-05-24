@@ -10,6 +10,11 @@ import Battery60Icon from '@mui/icons-material/Battery60';
 import BatteryCharging60Icon from '@mui/icons-material/BatteryCharging60';
 import Battery20Icon from '@mui/icons-material/Battery20';
 import BatteryCharging20Icon from '@mui/icons-material/BatteryCharging20';
+import SignalCellular1BarIcon from '@mui/icons-material/SignalCellular1Bar';
+import SignalCellular2BarIcon from '@mui/icons-material/SignalCellular2Bar';
+import SignalCellular3BarIcon from '@mui/icons-material/SignalCellular3Bar';
+import SignalCellular4BarIcon from '@mui/icons-material/SignalCellular4Bar';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
 import ErrorIcon from '@mui/icons-material/Error';
 import moment from 'moment';
 import { devicesActions } from '../store';
@@ -46,7 +51,13 @@ const useStyles = makeStyles((theme) => ({
   neutral: {
     color: theme.palette.colors.neutral,
   },
+  cold: {
+    color: theme.palette.colors.cold,
+  },
 }));
+
+const rssiText = (rssi) => (rssi > 19 ? 'Excellent'
+  : rssi > 14 ? 'Good' : rssi > 9 ? 'Ok' : 'Marginal')
 
 const DeviceRow = ({ data, index, style }) => {
   const classes = useStyles();
@@ -118,6 +129,26 @@ const DeviceRow = ({ data, index, style }) => {
                   ) : (
                     <EngineIcon width={20} height={20} className={classes.neutral} />
                   )}
+                </IconButton>
+              </Tooltip>
+            )}
+            {position.attributes.hasOwnProperty('temp1') && (
+              <Tooltip title={`${t('positionTemp')}: ${position.attributes.temp1}°C`}>
+                <IconButton size="small">
+                  <ThermostatIcon fontSize="small" className={position.attributes.temp1 > 24 ? classes.negative : position.attributes.temp1 > 10 ? classes.medium : classes.cold} />
+                </IconButton>
+              </Tooltip>
+            )}
+            {position.attributes.hasOwnProperty('rssi') && (
+              <Tooltip title={`${t('positionRssi')}: ${position.attributes.rssi} - ${rssiText(position.attributes.rssi)} `}>
+                <IconButton size="small">
+                  {position.attributes.rssi > 19 ? (
+                    <SignalCellular4BarIcon fontSize="small" className={classes.positive} />
+                  ) : position.attributes.rssi > 14 ? (
+                    <SignalCellular3BarIcon fontSize="small" className={classes.positive} />
+                  ) : position.attributes.rssi > 9 ? (
+                    <SignalCellular2BarIcon fontSize="small" className={classes.medium} />
+                  ) : <SignalCellular1BarIcon fontSize="small" className={classes.negative} />}
                 </IconButton>
               </Tooltip>
             )}
