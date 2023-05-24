@@ -90,7 +90,6 @@ const ChartReportPage = () => {
           <FormControl fullWidth>
             <InputLabel>{t('reportChartType')}</InputLabel>
             <Select label={t('reportChartType')} value={type} onChange={(e) => setType(e.target.value)}>
-              {console.log(positionAttributes)}
               {Object.keys(positionAttributes).filter((key) => positionAttributes[key].type === 'number').map((key) => (
                 <MenuItem key={key} value={key}>{positionAttributes[key].name}</MenuItem>
               ))}
@@ -98,7 +97,6 @@ const ChartReportPage = () => {
           </FormControl>
         </div>
       </ReportFilter>
-      {console.log(items)}
       {items.length > 0 && (
         <div className={classes.chart}>
           <ResponsiveContainer>
