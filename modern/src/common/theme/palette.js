@@ -1,6 +1,6 @@
 import {
   deepOrange,
-  amber, grey, green, indigo, red, common, purple,
+  amber, grey, green, indigo, red, common, purple, blue,
 } from '@mui/material/colors';
 
 export default (server) => {
@@ -18,6 +18,7 @@ export default (server) => {
     route: deepOrange[500],
     routeWaypoints: deepOrange[800],
     liveRoute: amber[800],
+    cold: blue[300],
   };
 
   return {
