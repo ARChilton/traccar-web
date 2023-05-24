@@ -161,6 +161,12 @@ export default () => {
       attribute: 'bingMapsKey',
     },
     {
+      id: 'historicOS1945',
+      title: 'Historic 1945-1965 OS 1:25,000',
+      style: styleCustom({ tiles: ['https://mapseries-tilesets.s3.amazonaws.com/os/25000_outline/{z}/{x}/{y}.png'] }),
+      available: true,
+    },
+    {
       id: 'googleTraffic',
       title: 'Google Traffic',
       style: styleCustom(['https://mt0.google.com/vt/lyrs=y,traffic&hl=sl&x={x}&y={y}&z={z}&s=Ga']),
