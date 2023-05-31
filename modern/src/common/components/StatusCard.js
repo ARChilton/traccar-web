@@ -123,7 +123,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const deviceImage = device?.attributes?.deviceImage;
 
   const positionAttributes = usePositionAttributes(t);
-  const positionItems = useAttributePreference('positionItems', 'speed,address,totalDistance,course');
+  const positionItems = useAttributePreference('positionItems', 'speed,address,totalDistance,course,gridReference');
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -206,7 +206,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 <CardContent className={classes.content}>
                   <Table size="small" classes={{ root: classes.table }}>
                     <TableBody>
-                      {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
+                      {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key) || (key === 'gridReference' && position.latitude && position.longitude)).map((key) => (
                         <StatusRow
                           key={key}
                           name={positionAttributes.hasOwnProperty(key) ? positionAttributes[key].name : key}

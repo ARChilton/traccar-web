@@ -1,4 +1,6 @@
 {
+    "gridReference": "OS Grid Reference",
+    "outOfRange":"Out of Range",
     "signal": "Signal",
     "sharedLoading": "Loading...",
     "sharedHide": "Hide",

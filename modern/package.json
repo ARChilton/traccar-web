@@ -19,6 +19,7 @@
     "mapbox-gl": "^1.13.3",
     "maplibre-gl": "^3.0.1",
     "moment": "^2.29.4",
+    "proj4": "^2.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",

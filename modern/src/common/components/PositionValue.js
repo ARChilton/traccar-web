@@ -10,6 +10,7 @@ import { useTranslation } from './LocalizationProvider';
 import { useAdministrator } from '../util/permissions';
 import AddressValue from './AddressValue';
 import GeofencesValue from './GeofencesValue';
+import { osTransform } from '../util/os-transform';
 
 const PositionValue = ({ position, property, attribute }) => {
   const t = useTranslation();
@@ -91,6 +92,15 @@ const PositionValue = ({ position, property, attribute }) => {
         return (<GeofencesValue geofenceIds={value} />);
       }
       return '';
+    case 'gridReference': {
+      const osGridValue = osTransform.fromLatLng({ lat: position.latitude, lng: position.longitude })
+
+      return (
+        <span>
+          {osGridValue.ea && osGridValue.no ? osTransform.toGridRef(osGridValue).text : t('outOfRange')}
+        </span>
+      )
+    }
     default:
       return formatValue(value);
   }

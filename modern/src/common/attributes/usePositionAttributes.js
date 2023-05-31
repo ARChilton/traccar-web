@@ -377,4 +377,8 @@ export default (t) => useMemo(() => ({
     name: t('positionAudio'),
     type: 'string',
   },
+  gridReference: {
+    name: t('gridReference'), // OS grid References
+    type: 'string',
+  },
 }), [t]);
