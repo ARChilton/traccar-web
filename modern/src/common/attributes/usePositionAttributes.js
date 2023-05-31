@@ -381,4 +381,9 @@ export default (t) => useMemo(() => ({
     name: t('gridReference'), // OS grid References
     type: 'string',
   },
+  what3Words: {
+    name: t('what3Words'), // what 3 words
+    type: 'string',
+    property: true,
+  },
 }), [t]);

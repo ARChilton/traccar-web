@@ -1,6 +1,10 @@
 {
     "gridReference": "OS Grid Reference",
-    "outOfRange":"Out of Range",
+    "outOfRange": "Out of Range",
+    "what3Words": "What 3 Words",
+    "showWhat3Words": "Show What 3 Words",
+    "needWhat3WordsApiKey": "Add API key to attributes",
+    "what3WordsApiKey": "What 3 Words API key",
     "signal": "Signal",
     "sharedLoading": "Loading...",
     "sharedHide": "Hide",

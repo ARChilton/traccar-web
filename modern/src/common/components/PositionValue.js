@@ -11,6 +11,7 @@ import { useAdministrator } from '../util/permissions';
 import AddressValue from './AddressValue';
 import GeofencesValue from './GeofencesValue';
 import { osTransform } from '../util/os-transform';
+import What3Words from './What3Words';
 
 const PositionValue = ({ position, property, attribute }) => {
   const t = useTranslation();
@@ -94,13 +95,14 @@ const PositionValue = ({ position, property, attribute }) => {
       return '';
     case 'gridReference': {
       const osGridValue = osTransform.fromLatLng({ lat: position.latitude, lng: position.longitude })
+      if (osGridValue.ea && osGridValue.no) {
+        return osTransform.toGridRef(osGridValue).text
+      }
 
-      return (
-        <span>
-          {osGridValue.ea && osGridValue.no ? osTransform.toGridRef(osGridValue).text : t('outOfRange')}
-        </span>
-      )
+      return t('outOfRange')
     }
+    case 'what3Words':
+      return <What3Words latitude={position.latitude} longitude={position.longitude} originalAddress={value} />
     default:
       return formatValue(value);
   }

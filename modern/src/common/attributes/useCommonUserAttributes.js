@@ -129,4 +129,8 @@ export default (t) => useMemo(() => ({
     name: t('sharedIconScale'),
     type: 'number',
   },
+  what3WordsToken: {
+    name: t('what3WordsApiKey'),
+    type: 'string',
+  },
 }), [t]);
