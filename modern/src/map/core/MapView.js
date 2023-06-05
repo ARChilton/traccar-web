@@ -9,7 +9,6 @@ import usePersistedState, { savePersistedState } from '../../common/util/usePers
 import { mapImages } from './preloadImages';
 import useMapStyles from './useMapStyles';
 import { osTransform } from '../../common/util/os-transform';
-import What3Words from '../../common/components/What3Words';
 
 const element = document.createElement('div');
 element.style.width = '100%';
@@ -71,18 +70,7 @@ const switcher = new SwitcherControl(
 
 map.addControl(switcher);
 
-map.on('click', function(clickLocation) {
-  const clickLat = clickLocation.lngLat.lat;
-  const clickLng = clickLocation.lngLat.lng;
-  const clickGridRef = osTransform.fromLatLng({ lat: clickLat, lng: clickLng });
-
-  new maplibregl.Popup()
-    .setLngLat(clickLocation.lngLat)
-    .setHTML(osTransform.toGridRef(clickGridRef).text)
-    .addTo(map);
-});
-
-  const MapView = ({ children }) => {
+const MapView = ({ children }) => {
   const containerEl = useRef(null);
 
   const [mapReady, setMapReady] = useState(false);
@@ -92,6 +80,7 @@ map.on('click', function(clickLocation) {
   const [defaultMapStyle] = usePersistedState('selectedMapStyle', usePreference('map', 'bingOS'));
   const mapboxAccessToken = useAttributePreference('mapboxAccessToken');
   const maxZoom = useAttributePreference('web.maxZoom');
+  const what3wordsKey = useAttributePreference('what3WordsToken')
 
   useEffect(() => {
     if (maxZoom) {
@@ -112,8 +101,56 @@ map.on('click', function(clickLocation) {
   useEffect(() => {
     const listener = (ready) => setMapReady(ready);
     addReadyListener(listener);
+    map.on('click', async (clickLocation) => {
+      const { lat, lng } = clickLocation.lngLat
+      const clickGridRef = osTransform.fromLatLng({ lat, lng });
+      const query = new URLSearchParams({ coordinates: `${lat},${lng}`, key: what3wordsKey });
+      const response = await fetch(`https://api.what3words.com/v3/convert-to-3wa?${query.toString()}`);
+      let what3words = ''
+      if (response.ok) {
+        const { words } = await response.json()
+        what3words = words
+      }
+      new maplibregl.Popup()
+        .setLngLat(clickLocation.lngLat)
+        .setHTML(`${osTransform.toGridRef(clickGridRef).text}${what3words ? `<br>${what3words}` : ''}`)
+        .addTo(map);
+    });
     return () => {
       removeReadyListener(listener);
+    };
+  }, []);
+
+  // adds OS grid reference and what3words on click
+  useEffect(() => {
+    const mapLocationPopup = async (clickLocation) => {
+      const { lat, lng } = clickLocation.lngLat
+      const clickGridRef = osTransform.fromLatLng({ lat, lng });
+      let osGridRef = ''
+      if (clickGridRef.ea && clickGridRef.no) {
+        osGridRef = osTransform.toGridRef(clickGridRef).text
+      }
+      const query = new URLSearchParams({ coordinates: `${lat},${lng}`, key: what3wordsKey });
+      const response = await fetch(`https://api.what3words.com/v3/convert-to-3wa?${query.toString()}`);
+      let what3words = ''
+      let htmlLocation = ''
+      if (response.ok) {
+        const { words } = await response.json()
+        what3words = words
+      }
+      if (osGridRef && what3words) {
+        htmlLocation = `${osGridRef}<br>${what3words}`
+      } else {
+        htmlLocation = `${osGridRef}${what3words}`
+      }
+      new maplibregl.Popup()
+        .setLngLat(clickLocation.lngLat)
+        .setHTML(htmlLocation)
+        .addTo(map);
+    };
+    map.on('click', mapLocationPopup);
+    return () => {
+      map.off('click', mapLocationPopup)
     };
   }, []);
 
