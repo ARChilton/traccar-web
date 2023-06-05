@@ -8,9 +8,9 @@ const MapOverlay = () => {
 
   const mapOverlays = useMapOverlays();
   const selectedMapOverlay = useAttributePreference('selectedMapOverlay');
-
   const activeOverlay = mapOverlays.filter((overlay) => overlay.available).find((overlay) => overlay.id === selectedMapOverlay);
-  const activePaint = activeOverlay.paint || {}
+  const activePaint = activeOverlay?.paint || {}
+
   useEffect(() => {
     if (activeOverlay) {
       map.addSource(id, activeOverlay.source);
