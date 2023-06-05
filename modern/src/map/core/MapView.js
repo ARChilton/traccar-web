@@ -8,6 +8,7 @@ import { useAttributePreference, usePreference } from '../../common/util/prefere
 import usePersistedState, { savePersistedState } from '../../common/util/usePersistedState';
 import { mapImages } from './preloadImages';
 import useMapStyles from './useMapStyles';
+import { osTransform } from '../../common/util/os-transform';
 
 const element = document.createElement('div');
 element.style.width = '100%';
@@ -69,7 +70,20 @@ const switcher = new SwitcherControl(
 
 map.addControl(switcher);
 
-const MapView = ({ children }) => {
+map.on('click', function(clickLocation) {
+  var clickLat = clickLocation.lngLat.lat;
+  var clickLng = clickLocation.lngLat.lng;
+  const osGridValue = osTransform.fromLatLng({ lat: clickLat, lng: clickLng });
+
+  new maplibregl.Popup()
+    .setLngLat(clickLocation.lngLat)
+    .setHTML(osTransform.toGridRef(osGridValue).text)
+    .addTo(map);
+});
+
+
+
+  const MapView = ({ children }) => {
   const containerEl = useRef(null);
 
   const [mapReady, setMapReady] = useState(false);
