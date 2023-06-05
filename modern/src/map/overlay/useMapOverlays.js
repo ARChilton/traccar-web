@@ -35,6 +35,12 @@ export default () => {
       available: true,
     },
     {
+      id: 'o2CoverageMap',
+      title: t('mapO2CoverageMap'),
+      source: sourceCustom(['https://68aa7b45-tiles.spatialbuzz.net/tiles/o2_uk-v186/styles/o2_uk_v186_lte/{z}/{x}/{y}.png']),
+      available: true,
+    },
+    {
       id: 'openWeatherClouds',
       title: t('mapOpenWeatherClouds'),
       source: sourceOpenWeather('clouds_new', openWeatherKey),

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<gpx version="1.1" creator="OS Maps - Web" xmlns="http://www.topografix.com/GPX/1/1"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+xmlns:gs="http://www.topografix.com/GPX/gpx_style/0/2"
+xmlns:gh="https://graphhopper.com/public/schema/gpx/1.1"
+xmlns:os="https://ordnancesurvey.co.uk/public/schema/route/0.1">
+    <metadata>
+        <name>Bronze DofE Practice Day 1</name>
+        <desc>Day 1</desc>
+        <bounds minlat="51.1762750" minlon="0.3288230" maxlat="51.2293200" maxlon="0.3854470"/>
+        <extensions>
+            <os:version>2.0</os:version>
+            <os:point lat="51.1762750" lon="0.3845080" type="start"/>
+            <os:point lat="51.2293200" lon="0.3366690" type="end"/>
+            <os:source id="">13</os:source>
+            <os:activity>ON_FOOT_WALKING</os:activity>
+            <os:difficulty>UNKNOWN</os:difficulty>
+            <os:paths/>
+            <os:distance>12803.3041439</os:distance>
+            <os:elevation_ascent>17.1000000</os:elevation_ascent>
+        </extensions>
+    </metadata>
+    <wpt lat="51.1762750" lon="0.3845080"/>
+    <wpt lat="51.1780130" lon="0.3848350"/>
+    <wpt lat="51.1793630" lon="0.3854470"/>
+    <wpt lat="51.1820170" lon="0.3762150"/>
+    <wpt lat="51.1827090" lon="0.3774860"/>
+    <wpt lat="51.1827710" lon="0.3786430"/>
+    <wpt lat="51.1836880" lon="0.3795720"/>
+    <wpt lat="51.1841730" lon="0.3798010"/>
+    <wpt lat="51.1858560" lon="0.3817880"/>
+    <wpt lat="51.1871800" lon="0.3826360"/>
+    <wpt lat="51.1871610" lon="0.3814480"/>
+    <wpt lat="51.1875730" lon="0.3789570"/>
+    <wpt lat="51.1876160" lon="0.3767870"/>
+    <wpt lat="51.1887180" lon="0.3728040"/>
+    <wpt lat="51.1885620" lon="0.3720830"/>
+    <wpt lat="51.1891550" lon="0.3722160">
+        <name>Leg 1</name>
+        <desc>Follow this to leg two ?</desc>
+    </wpt>
+    <wpt lat="51.1903350" lon="0.3706470"/>
+    <wpt lat="51.1906660" lon="0.3711390"/>
+    <wpt lat="51.1907790" lon="0.3687010"/>
+    <wpt lat="51.1894510" lon="0.3691420"/>
+    <wpt lat="51.1893360" lon="0.3684910"/>
+    <wpt lat="51.1893680" lon="0.3626890"/>
+    <wpt lat="51.1903880" lon="0.3595840"/>
+    <wpt lat="51.1892920" lon="0.3558960"/>
+    <wpt lat="51.1885160" lon="0.3563930"/>
+    <wpt lat="51.1880210" lon="0.3546020"/>
+    <wpt lat="51.1879000" lon="0.3532040"/>
+    <wpt lat="51.1873120" lon="0.3506960"/>
+    <wpt lat="51.1874150" lon="0.3498190"/>
+    <wpt lat="51.1879560" lon="0.3493720"/>
+    <wpt lat="51.1883410" lon="0.3460650"/>
+    <wpt lat="51.1890840" lon="0.3429800">
+        <desc>Leg 2</desc>
+    </wpt>
+    <wpt lat="51.1903260" lon="0.3404650"/>
+    <wpt lat="51.1907700" lon="0.3384850"/>
+    <wpt lat="51.1905120" lon="0.3375890"/>
+    <wpt lat="51.1915030" lon="0.3338040"/>
+    <wpt lat="51.1912620" lon="0.3330790"/>
+    <wpt lat="51.1912750" lon="0.3302960"/>
+    <wpt lat="51.1914650" lon="0.3293220"/>
+    <wpt lat="51.1930920" lon="0.3309330"/>
+    <wpt lat="51.1948910" lon="0.3313640"/>
+    <wpt lat="51.1957700" lon="0.3321220"/>
+    <wpt lat="51.1986000" lon="0.3307400"/>
+    <wpt lat="51.1996130" lon="0.3311650"/>
+    <wpt lat="51.2023420" lon="0.3308300"/>
+    <wpt lat="51.2033600" lon="0.3320360">
+        <desc>Leg 3</desc>
+    </wpt>
+    <wpt lat="51.2040710" lon="0.3288230"/>
+    <wpt lat="51.2060290" lon="0.3298400"/>
+    <wpt lat="51.2068670" lon="0.3304940"/>
+    <wpt lat="51.2075010" lon="0.3306620"/>
+    <wpt lat="51.2078760" lon="0.3342460"/>
+    <wpt lat="51.2090610" lon="0.3366480"/>
+    <wpt lat="51.2097060" lon="0.3373600"/>
+    <wpt lat="51.2101370" lon="0.3412860"/>
+    <wpt lat="51.2101410" lon="0.3431870"/>
+    <wpt lat="51.2119960" lon="0.3440290"/>
+    <wpt lat="51.2121660" lon="0.3418990"/>
+    <wpt lat="51.2129070" lon="0.3410200"/>
+    <wpt lat="51.2136730" lon="0.3388540"/>
+    <wpt lat="51.2155610" lon="0.3369820"/>
+    <wpt lat="51.2160550" lon="0.3377880"/>
+    <wpt lat="51.2170100" lon="0.3367840"/>
+    <wpt lat="51.2175740" lon="0.3372890"/>
+    <wpt lat="51.2175740" lon="0.3383410"/>
+    <wpt lat="51.2201130" lon="0.3410850"/>
+    <wpt lat="51.2204760" lon="0.3410010">
+        <name>Stuarts Leg</name>
+        <desc>This is one I updated as a test</desc>
+    </wpt>
+    <wpt lat="51.2229060" lon="0.3416690"/>
+    <wpt lat="51.2234700" lon="0.3390170"/>
+    <wpt lat="51.2260980" lon="0.3351460"/>
+    <wpt lat="51.2272540" lon="0.3326260"/>
+    <wpt lat="51.2279300" lon="0.3338820"/>
+    <wpt lat="51.2268530" lon="0.3356940"/>
+    <wpt lat="51.2267320" lon="0.3364010"/>
+    <wpt lat="51.2274960" lon="0.3364740"/>
+    <wpt lat="51.2279520" lon="0.3370400"/>
+    <wpt lat="51.2283590" lon="0.3358390"/>
+    <wpt lat="51.2293200" lon="0.3366690"/>
+    <trk>
+        <name>Bronze DofE Practice Day 1</name>
+        <trkseg>
+            <trkpt lat="51.1762750" lon="0.3845080"/>
+            <trkpt lat="51.1780130" lon="0.3848350"/>
+            <trkpt lat="51.1793630" lon="0.3854470"/>
+            <trkpt lat="51.1798470" lon="0.3836050"/>
+            <trkpt lat="51.1805510" lon="0.3814010"/>
+            <trkpt lat="51.1820170" lon="0.3762150"/>
+            <trkpt lat="51.1827090" lon="0.3774860"/>
+            <trkpt lat="51.1827710" lon="0.3786430"/>
+            <trkpt lat="51.1836880" lon="0.3795720"/>
+            <trkpt lat="51.1841730" lon="0.3798010"/>
+            <trkpt lat="51.1858560" lon="0.3817880"/>
+            <trkpt lat="51.1871800" lon="0.3826360"/>
+            <trkpt lat="51.1871610" lon="0.3814480"/>
+            <trkpt lat="51.1875730" lon="0.3789570"/>
+            <trkpt lat="51.1876160" lon="0.3767870"/>
+            <trkpt lat="51.1880470" lon="0.3754850"/>
+            <trkpt lat="51.1887180" lon="0.3728040"/>
+            <trkpt lat="51.1885620" lon="0.3720830"/>
+            <trkpt lat="51.1891550" lon="0.3722160"/>
+            <trkpt lat="51.1903350" lon="0.3706470"/>
+            <trkpt lat="51.1906660" lon="0.3711390"/>
+            <trkpt lat="51.1907500" lon="0.3701250"/>
+            <trkpt lat="51.1907790" lon="0.3687010"/>
+            <trkpt lat="51.1894510" lon="0.3691420"/>
+            <trkpt lat="51.1893360" lon="0.3684910"/>
+            <trkpt lat="51.1893680" lon="0.3626890"/>
+            <trkpt lat="51.1903880" lon="0.3595840"/>
+            <trkpt lat="51.1892920" lon="0.3558960"/>
+            <trkpt lat="51.1885160" lon="0.3563930"/>
+            <trkpt lat="51.1880210" lon="0.3546020"/>
+            <trkpt lat="51.1879000" lon="0.3532040"/>
+            <trkpt lat="51.1873120" lon="0.3506960"/>
+            <trkpt lat="51.1874150" lon="0.3498190"/>
+            <trkpt lat="51.1879560" lon="0.3493720"/>
+            <trkpt lat="51.1883410" lon="0.3460650"/>
+            <trkpt lat="51.1890840" lon="0.3429800"/>
+            <trkpt lat="51.1903260" lon="0.3404650"/>
+            <trkpt lat="51.1907700" lon="0.3384850"/>
+            <trkpt lat="51.1905120" lon="0.3375890"/>
+            <trkpt lat="51.1915030" lon="0.3338040"/>
+            <trkpt lat="51.1912620" lon="0.3330790"/>
+            <trkpt lat="51.1912750" lon="0.3302960"/>
+            <trkpt lat="51.1914650" lon="0.3293220"/>
+            <trkpt lat="51.1930920" lon="0.3309330"/>
+            <trkpt lat="51.1948910" lon="0.3313640"/>
+            <trkpt lat="51.1957700" lon="0.3321220"/>
+            <trkpt lat="51.1981130" lon="0.3308850"/>
+            <trkpt lat="51.1986000" lon="0.3307400"/>
+            <trkpt lat="51.1996130" lon="0.3311650"/>
+            <trkpt lat="51.2015340" lon="0.3308220"/>
+            <trkpt lat="51.2023420" lon="0.3308300"/>
+            <trkpt lat="51.2029480" lon="0.3313700"/>
+            <trkpt lat="51.2033600" lon="0.3320360"/>
+            <trkpt lat="51.2040710" lon="0.3288230"/>
+            <trkpt lat="51.2051440" lon="0.3294550"/>
+            <trkpt lat="51.2060290" lon="0.3298400"/>
+            <trkpt lat="51.2068670" lon="0.3304940"/>
+            <trkpt lat="51.2075010" lon="0.3306620"/>
+            <trkpt lat="51.2078760" lon="0.3342460"/>
+            <trkpt lat="51.2090610" lon="0.3366480"/>
+            <trkpt lat="51.2097060" lon="0.3373600"/>
+            <trkpt lat="51.2101370" lon="0.3412860"/>
+            <trkpt lat="51.2101410" lon="0.3431870"/>
+            <trkpt lat="51.2119960" lon="0.3440290"/>
+            <trkpt lat="51.2121660" lon="0.3418990"/>
+            <trkpt lat="51.2129070" lon="0.3410200"/>
+            <trkpt lat="51.2136730" lon="0.3388540"/>
+            <trkpt lat="51.2155610" lon="0.3369820"/>
+            <trkpt lat="51.2160550" lon="0.3377880"/>
+            <trkpt lat="51.2170100" lon="0.3367840"/>
+            <trkpt lat="51.2175740" lon="0.3372890"/>
+            <trkpt lat="51.2175740" lon="0.3383410"/>
+            <trkpt lat="51.2201130" lon="0.3410850"/>
+            <trkpt lat="51.2204760" lon="0.3410010"/>
+            <trkpt lat="51.2229060" lon="0.3416690"/>
+            <trkpt lat="51.2234700" lon="0.3390170"/>
+            <trkpt lat="51.2253530" lon="0.3362620"/>
+            <trkpt lat="51.2260980" lon="0.3351460"/>
+            <trkpt lat="51.2267440" lon="0.3336860"/>
+            <trkpt lat="51.2269920" lon="0.3329860"/>
+            <trkpt lat="51.2272540" lon="0.3326260"/>
+            <trkpt lat="51.2279300" lon="0.3338820"/>
+            <trkpt lat="51.2268530" lon="0.3356940"/>
+            <trkpt lat="51.2267320" lon="0.3364010"/>
+            <trkpt lat="51.2274960" lon="0.3364740"/>
+            <trkpt lat="51.2279520" lon="0.3370400"/>
+            <trkpt lat="51.2281760" lon="0.3364750"/>
+            <trkpt lat="51.2283590" lon="0.3358390"/>
+            <trkpt lat="51.2293200" lon="0.3366690"/>
+            <extensions>
+                <gs:line>
+                    <gs:color>453C90</gs:color>
+                    <gs:opacity>0.3</gs:opacity>
+                    <gs:width>10.0</gs:width>
+                </gs:line>
+            </extensions>
+        </trkseg>
+    </trk>
+</gpx>
