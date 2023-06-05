@@ -70,36 +70,34 @@ const switcher = new SwitcherControl(
 
 map.addControl(switcher);
 
-
 // Add terrain Control button & Layers
 map.addControl(
   new maplibregl.TerrainControl({
-  source: 'terrainSource',
-  exaggeration: 1
-  })
-  );
-  map.on('load', () => {
-    map.addSource("terrainSource", {
-      "type": "raster-dem",
-      "url": "https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx",
-    });
-    map.addSource("hillshadeSource", {
-      "type": "raster-dem",
-      "url": "https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx",
-    });
-    map.setTerrain({
-      source: "terrainSource",
-      exaggeration: 1
-    });
-    map.addLayer({
-      id: 'hills',
-      type: 'hillshade',
-      source: 'hillshadeSource',
-      layout: { visibility: 'visible' },
-      paint: { 'hillshade-shadow-color': '#473B24' }
-    });
+    source: 'terrainSource',
+    exaggeration: 1,
+  }),
+);
+map.on('load', () => {
+  map.addSource('terrainSource', {
+    type: 'raster-dem',
+    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx',
   });
-
+  map.addSource('hillshadeSource', {
+    type: 'raster-dem',
+    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx',
+  });
+  map.setTerrain({
+    source: 'terrainSource',
+    exaggeration: 1,
+  });
+  map.addLayer({
+    id: 'hills',
+    type: 'hillshade',
+    source: 'hillshadeSource',
+    layout: { visibility: 'visible' },
+    paint: { 'hillshade-shadow-color': '#473B24' },
+  });
+});
 
 const MapView = ({ children }) => {
   const containerEl = useRef(null);
@@ -132,7 +130,7 @@ const MapView = ({ children }) => {
   useEffect(() => {
     const listener = (ready) => setMapReady(ready);
     addReadyListener(listener);
-        return () => {
+    return () => {
       removeReadyListener(listener);
     };
   }, []);
