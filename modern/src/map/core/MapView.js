@@ -70,6 +70,25 @@ const switcher = new SwitcherControl(
 
 map.addControl(switcher);
 
+// Add terrain Control button
+map.addControl(
+  new maplibregl.TerrainControl({
+  source: 'terrainSource',
+  exaggeration: 2.5
+  })
+  );
+
+  map.on('load', () => {
+    map.addSource("terrainSource", {
+      "type": "raster-dem",
+      "url": "https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx",
+    });
+    map.setTerrain({
+      source: "terrainSource",
+      exaggeration: 2.5
+    });
+  });
+
 const MapView = ({ children }) => {
   const containerEl = useRef(null);
 
@@ -101,22 +120,7 @@ const MapView = ({ children }) => {
   useEffect(() => {
     const listener = (ready) => setMapReady(ready);
     addReadyListener(listener);
-    map.on('click', async (clickLocation) => {
-      const { lat, lng } = clickLocation.lngLat
-      const clickGridRef = osTransform.fromLatLng({ lat, lng });
-      const query = new URLSearchParams({ coordinates: `${lat},${lng}`, key: what3wordsKey });
-      const response = await fetch(`https://api.what3words.com/v3/convert-to-3wa?${query.toString()}`);
-      let what3words = ''
-      if (response.ok) {
-        const { words } = await response.json()
-        what3words = words
-      }
-      new maplibregl.Popup()
-        .setLngLat(clickLocation.lngLat)
-        .setHTML(`${osTransform.toGridRef(clickGridRef).text}${what3words ? `<br>${what3words}` : ''}`)
-        .addTo(map);
-    });
-    return () => {
+        return () => {
       removeReadyListener(listener);
     };
   }, []);
