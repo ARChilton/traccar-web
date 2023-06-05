@@ -78,7 +78,7 @@ map.on('click', function(clickLocation) {
 
   new maplibregl.Popup()
     .setLngLat(clickLocation.lngLat)
-    .setHTML('Grid Reference</BR>'+osTransform.toGridRef(clickGridRef).text)
+    .setHTML(osTransform.toGridRef(clickGridRef).text)
     .addTo(map);
 });
 
