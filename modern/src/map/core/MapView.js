@@ -9,6 +9,7 @@ import usePersistedState, { savePersistedState } from '../../common/util/usePers
 import { mapImages } from './preloadImages';
 import useMapStyles from './useMapStyles';
 import { osTransform } from '../../common/util/os-transform';
+import What3Words from '../../common/components/What3Words';
 
 const element = document.createElement('div');
 element.style.width = '100%';
@@ -71,17 +72,15 @@ const switcher = new SwitcherControl(
 map.addControl(switcher);
 
 map.on('click', function(clickLocation) {
-  var clickLat = clickLocation.lngLat.lat;
-  var clickLng = clickLocation.lngLat.lng;
-  const osGridValue = osTransform.fromLatLng({ lat: clickLat, lng: clickLng });
+  const clickLat = clickLocation.lngLat.lat;
+  const clickLng = clickLocation.lngLat.lng;
+  const clickGridRef = osTransform.fromLatLng({ lat: clickLat, lng: clickLng });
 
   new maplibregl.Popup()
     .setLngLat(clickLocation.lngLat)
-    .setHTML(osTransform.toGridRef(osGridValue).text)
+    .setHTML('Grid Reference</BR>'+osTransform.toGridRef(clickGridRef).text)
     .addTo(map);
 });
-
-
 
   const MapView = ({ children }) => {
   const containerEl = useRef(null);
