@@ -80,11 +80,11 @@ map.addControl(
 map.on('load', () => {
   map.addSource('terrainSource', {
     type: 'raster-dem',
-    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx',
+    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
   });
   map.addSource('hillshadeSource', {
     type: 'raster-dem',
-    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=eIgS48TpQ70m77qKYrsx',
+    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
   });
   map.setTerrain({
     source: 'terrainSource',
