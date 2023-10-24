@@ -14,6 +14,7 @@ const element = document.createElement('div');
 element.style.width = '100%';
 element.style.height = '100%';
 element.style.boxSizing = 'initial';
+const hillShadeLayerName = 'hillShadeLayer'
 
 export const map = new maplibregl.Map({
   container: element,
@@ -46,10 +47,31 @@ const initMap = async () => {
       });
     });
   }
+  // adds terrain if it doesn't exist every time we init the map
+  if (!map.terrain) {
+    map.addSource('terrainSource', {
+      type: 'raster-dem',
+      url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
+    });
+  }
+  // adds an invisible hills layer every time we init the map
+  if (!map.getLayer(hillShadeLayerName)) {
+    map.addSource('hillshadeSource', {
+      type: 'raster-dem',
+      url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
+    });
+    map.addLayer({
+      id: hillShadeLayerName,
+      type: 'hillshade',
+      source: 'hillshadeSource',
+      layout: { visibility: 'none' },
+      paint: { 'hillshade-shadow-color': '#473B24' },
+    });
+  }
   updateReadyValue(true);
 };
 
-map.addControl(new maplibregl.NavigationControl());
+map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
 
 const switcher = new SwitcherControl(
   () => updateReadyValue(false),
@@ -77,27 +99,6 @@ map.addControl(
     exaggeration: 1,
   }),
 );
-map.on('load', () => {
-  map.addSource('terrainSource', {
-    type: 'raster-dem',
-    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
-  });
-  map.addSource('hillshadeSource', {
-    type: 'raster-dem',
-    url: 'https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=QqdGI20vgmlXVM85Lrdo',
-  });
-  map.setTerrain({
-    source: 'terrainSource',
-    exaggeration: 1,
-  });
-  map.addLayer({
-    id: 'hills',
-    type: 'hillshade',
-    source: 'hillshadeSource',
-    layout: { visibility: 'visible' },
-    paint: { 'hillshade-shadow-color': '#473B24' },
-  });
-});
 
 const MapView = ({ children }) => {
   const containerEl = useRef(null);
@@ -167,6 +168,20 @@ const MapView = ({ children }) => {
       map.off('click', mapLocationPopup)
     };
   }, []);
+
+  useEffect(() => {
+    const hillshadeToggle = ({ terrain }) => {
+      if (map.getLayer(hillShadeLayerName)) {
+        if (terrain) {
+          map.setLayoutProperty(hillShadeLayerName, 'visibility', 'visible');
+        } else {
+          map.setLayoutProperty(hillShadeLayerName, 'visibility', 'none');
+        }
+      }
+    }
+    map.on('terrain', hillshadeToggle)
+    return () => { map.off('terrain', hillshadeToggle) }
+  }, [])
 
   useLayoutEffect(() => {
     const currentEl = containerEl.current;
