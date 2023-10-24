@@ -79,7 +79,7 @@ export const geofenceToFeature = (theme, item) => {
     geometry,
     properties: {
       name: item.name,
-      color: item.attributes.color || theme.palette.colors.geometry,
+      color: item.attributes.color || theme.palette.geometry.main,
       opacity: item.attributes.opacity || 0.4,
       lineWidth: item.attributes.lineWidth || 3,
       lineOpacity: item.attributes.lineOpacity || 0.75,

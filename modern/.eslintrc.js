@@ -6,7 +6,7 @@ module.exports = {
   plugins: [
     'react',
   ],
-  ignorePatterns: ['service-worker.js', 'serviceWorkerRegistration.js', 'switcher.js', 'theme.js'],
+  ignorePatterns: ['build/', 'switcher.js', 'theme.js'],
   rules: {
     'import/prefer-default-export': 'off',
     'max-len': [0],
@@ -14,9 +14,6 @@ module.exports = {
     'no-return-assign': [0],
     'no-param-reassign': [0],
     'no-prototype-builtins': [0],
-    'no-nested-ternary': [0],
-    'operator-linebreak': [0],
-    'import/no-unresolved': [0],
     'object-curly-newline': [1, {
       ObjectExpression: { minProperties: 8, multiline: true, consistent: true },
       ObjectPattern: { minProperties: 8, multiline: true, consistent: true },

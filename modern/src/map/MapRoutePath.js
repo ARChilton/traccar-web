@@ -20,7 +20,7 @@ const MapRoutePath = ({ name, positions, coordinates }) => {
         }
       }
     }
-    return theme.palette.colors.geometry;
+    return theme.palette.geometry.main;
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const MapRoutePath = ({ name, positions, coordinates }) => {
         'line-cap': 'round',
       },
       paint: {
-        'line-color': theme.palette.colors.route,
+        'line-color': theme.palette.route,
         'line-width': 20,
         'line-opacity': 0.4,
       },

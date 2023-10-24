@@ -39,7 +39,7 @@ const PoiMap = () => {
         type: 'circle',
         paint: {
           'circle-radius': 8,
-          'circle-color': theme.palette.colors.poi,
+          'circle-color': theme.palette.poi,
           'circle-opacity': 0.5,
         },
       });
@@ -52,7 +52,7 @@ const PoiMap = () => {
           'line-cap': 'round',
         },
         paint: {
-          'line-color': theme.palette.colors.poi,
+          'line-color': theme.palette.poi,
           'line-width': 20,
           'line-opacity': 0.3,
         },
