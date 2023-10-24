@@ -20,7 +20,7 @@ module.exports = {
       ImportDeclaration: { minProperties: 4, multiline: true, consistent: true },
       ExportDeclaration: { minProperties: 4, multiline: true, consistent: true },
     }],
-    'react/jsx-filename-extension': [1, { extensions: ['.js'] }],
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'react/function-component-definition': [
       1,
       {
@@ -35,7 +35,7 @@ module.exports = {
     semi: 0,
     'import/no-relative-packages': 0,
     'import-order': [
-      'warn',
+      'off',
       {
         ignoreCase: false,
         ignoreDeclarationSort: false,
