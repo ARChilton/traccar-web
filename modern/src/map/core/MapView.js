@@ -154,9 +154,9 @@ const MapView = ({ children }) => {
         what3words = words
       }
       if (osGridRef && what3words) {
-        htmlLocation = `${osGridRef}<br>${what3words}`
+        htmlLocation = `${osGridRef}<br>${what3words}<br><a href='https://www.google.com/maps/dir/?api=1&destination=${lat}%2C${lng}&travelmode=driving' target='_blank'>Navigate to here..</a>`
       } else {
-        htmlLocation = `${osGridRef}${what3words}`
+        htmlLocation = `${osGridRef}${what3words}<br><a href='https://www.google.com/maps/dir/?api=1&destination=${lat}%2C${lng}&travelmode=driving' target='_blank'>Navigate to here..</a>`
       }
       new maplibregl.Popup()
         .setLngLat(clickLocation.lngLat)
