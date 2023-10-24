@@ -1,37 +1,30 @@
 import {
   deepOrange,
-  amber, grey, green, indigo, red, common, purple, blue,
+  amber, grey, green, indigo, purple, blue,
 } from '@mui/material/colors';
 
-export default (server) => {
-  const colors = {
-    white: common.white,
-    background: grey[50],
-    primary: server?.attributes?.colorPrimary || indigo[900],
-    secondary: server?.attributes?.colorSecondary || green[800],
-    positive: green[500],
-    medium: amber[700],
-    negative: red[500],
-    neutral: grey[500],
-    geometry: '#3bb2d0',
-    poi: purple[500],
-    route: deepOrange[500],
-    routeWaypoints: deepOrange[800],
-    liveRoute: amber[800],
-    cold: blue[300],
-  };
+const validatedColor = (color) => (/^#([0-9A-Fa-f]{3}){1,2}$/.test(color) ? color : null);
 
-  return {
-    background: {
-      default: colors.background,
-    },
-    primary: {
-      main: colors.primary,
-    },
-    secondary: {
-      main: colors.secondary,
-      contrastText: colors.white,
-    },
-    colors,
-  };
-};
+export default (server, darkMode) => ({
+  mode: darkMode ? 'dark' : 'light',
+  background: {
+    default: darkMode ? grey[900] : grey[50],
+  },
+  primary: {
+    main: validatedColor(server?.attributes?.colorPrimary) || (darkMode ? indigo[200] : indigo[900]),
+  },
+  secondary: {
+    main: validatedColor(server?.attributes?.colorSecondary) || (darkMode ? green[200] : green[800]),
+  },
+  neutral: {
+    main: grey[500],
+  },
+  geometry: {
+    main: '#3bb2d0',
+  },
+  poi: purple[500],
+  route: deepOrange[500],
+  routeWaypoints: deepOrange[800],
+  liveRoute: amber[800],
+  cold: blue[300],
+});
