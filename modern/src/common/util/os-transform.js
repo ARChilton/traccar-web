@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-
+/* eslint-disable no-console */
 import proj4 from 'proj4';
 
 // defines the EPSG:27700 conversion from lat lng
