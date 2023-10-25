@@ -73,7 +73,7 @@ const languages = {
   de: { data: de, country: 'DE', name: 'Deutsch' },
   da: { data: da, country: 'DK', name: 'Dansk' },
   el: { data: el, country: 'GR', name: 'Ελληνικά' },
-  en: { data: en, country: 'US', name: 'English' },
+  en: { data: en, country: 'GB', name: 'English' },
   es: { data: es, country: 'ES', name: 'Español' },
   fa: { data: fa, country: 'IR', name: 'فارسی' },
   fi: { data: fi, country: 'FI', name: 'Suomi' },
