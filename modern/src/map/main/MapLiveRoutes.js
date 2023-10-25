@@ -38,7 +38,7 @@ const MapLiveRoutes = () => {
           'line-cap': 'round',
         },
         paint: {
-          'line-color': theme.palette.colors.liveRoute,
+          'line-color': theme.palette.liveRoute,
           'line-width': 20,
           'line-opacity': 0.3,
         },
