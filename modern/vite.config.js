@@ -27,8 +27,8 @@ export default defineConfig((command, mode) => {
         },
         manifest: {
           short_name: env.APP_NAME,
-          name: 'Tonbridge Traccar Services',
-          theme_color: '${colorPrimary}',
+          name: 'Tonbridge Traccar',
+          theme_color: '#000000',
           icons: [
             {
               src: 'pwa-64x64.png',
