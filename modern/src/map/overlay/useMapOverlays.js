@@ -37,7 +37,7 @@ export default () => {
     {
       id: 'o2CoverageMap',
       title: t('mapO2CoverageMap'),
-      source: sourceCustom(['https://68aa7b45-tiles.spatialbuzz.net/tiles/o2_uk-v186/styles/o2_uk_v186_lte/{z}/{x}/{y}.png']),
+      source: sourceCustom(['https://68aa7b45-tiles.spatialbuzz.net/tiles/o2_uk-v190/styles/o2_uk_v190_lte/{z}/{x}/{y}.png']),
       available: true,
       paint: {
         'raster-opacity': 0.4,
