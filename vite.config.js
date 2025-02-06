@@ -8,8 +8,8 @@ export default defineConfig(() => ({
   server: {
     port: 3000,
     proxy: {
-      '/api/socket': 'ws://localhost:8082',
-      '/api': 'http://localhost:8082',
+      '/api/socket': 'wss://traccar.tonbridge-scouts.org.uk',
+      '/api': 'https://traccar.tonbridge-scouts.org.uk',
     },
   },
   build: {
