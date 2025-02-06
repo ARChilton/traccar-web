@@ -1,0 +1,145 @@
+import { Divider, IconButton, Paper, Toolbar, Typography } from '@mui/material'
+import React, { useState } from 'react'
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import GeofencesList from './GeofencesList'
+import MapCurrentLocation from '../map/MapCurrentLocation'
+import MapGeocoder from '../map/geocoder/MapGeocoder'
+import MapGeofenceEdit from '../map/draw/MapGeofenceEdit'
+import MapScale from '../map/MapScale'
+import MapView from '../map/core/MapView'
+import Tooltip from '@mui/material/Tooltip'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
+import { errorsActions } from '../store'
+import makeStyles from '@mui/styles/makeStyles'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from '../common/components/LocalizationProvider'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  content: {
+    flexGrow: 1,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+    },
+  },
+  drawer: {
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up('sm')]: {
+      width: theme.dimensions.drawerWidthDesktop,
+    },
+    [theme.breakpoints.down('sm')]: {
+      height: theme.dimensions.drawerHeightPhone,
+    },
+  },
+  mapContainer: {
+    flexGrow: 1,
+  },
+  title: {
+    flexGrow: 1,
+  },
+  fileInput: {
+    display: 'none',
+  },
+}))
+
+const GeofencesPage = () => {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const t = useTranslation()
+
+  const [selectedGeofenceId, setSelectedGeofenceId] = useState()
+
+  const handleFile = (event) => {
+    const files = Array.from(event.target.files)
+    const [file] = files
+    const reader = new FileReader()
+    reader.onload = async () => {
+      const xml = new DOMParser().parseFromString(reader.result, 'text/xml')
+      const segment = xml.getElementsByTagName('trkseg')[0]
+      const coordinates = Array.from(segment.getElementsByTagName('trkpt'))
+        .map(
+          (point) => `${point.getAttribute('lat')} ${point.getAttribute('lon')}`
+        )
+        .join(', ')
+      const area = `LINESTRING (${coordinates})`
+      const newItem = { name: t('sharedGeofence'), area }
+      try {
+        const response = await fetch('/api/geofences', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newItem),
+        })
+        if (response.ok) {
+          const item = await response.json()
+          navigate(`/settings/geofence/${item.id}`)
+        } else {
+          throw Error(await response.text())
+        }
+      } catch (error) {
+        dispatch(errorsActions.push(error.message))
+      }
+    }
+    reader.onerror = (event) => {
+      dispatch(errorsActions.push(event.target.error))
+    }
+    reader.readAsText(file)
+  }
+
+  return (
+    <div className={classes.root}>
+      <div className={classes.content}>
+        <Paper square className={classes.drawer}>
+          <Toolbar>
+            <IconButton
+              edge='start'
+              sx={{ mr: 2 }}
+              onClick={() => navigate(-1)}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant='h6' className={classes.title}>
+              {t('sharedGeofences')}
+            </Typography>
+            <label htmlFor='upload-gpx'>
+              <input
+                accept='.gpx'
+                id='upload-gpx'
+                type='file'
+                className={classes.fileInput}
+                onChange={handleFile}
+              />
+              <IconButton edge='end' component='span' onClick={() => {}}>
+                <Tooltip title={t('sharedUpload')}>
+                  <UploadFileIcon />
+                </Tooltip>
+              </IconButton>
+            </label>
+          </Toolbar>
+          <Divider />
+          <GeofencesList onGeofenceSelected={setSelectedGeofenceId} />
+        </Paper>
+        <div className={classes.mapContainer}>
+          <MapView>
+            <MapGeofenceEdit selectedGeofenceId={selectedGeofenceId} />
+          </MapView>
+          <MapScale />
+          <MapCurrentLocation />
+          <MapGeocoder />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default GeofencesPage
